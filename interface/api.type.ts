@@ -1,6 +1,20 @@
+export interface FRecipe {
+    RCP_SEQ: string; // 레시피 일련번호
+    ATT_FILE_NO_MAIN?: string; // 메인 이미지 URL
+    ATT_FILE_NO_MK?: string; // 썸네일 이미지 URL
+    HASH_TAG?: string; // 해시태그
+    MANUAL?: string[]; // 조리 과정 (배열)
+    MANUAL_IMG?: string[]; // 조리 과정 이미지 URL (배열)
+    RCP_NM: string; // 레시피 이름
+    RCP_PARTS_DTLS: string; // 재료 상세
+    RCP_PAT2?: string; // 레시피 종류
+    RCP_WAY2?: string; // 조리 방법
+    like: number; // 좋아요 수
+}
+
 export interface Recipe {
     RCP_SEQ : string;              // 일련변호
-    RCP_NM?: string;               // 메뉴명
+    RCP_NM: string;               // 메뉴명
     RCP_WAY2?: string;             // 조리방법
     RCP_PAT2?: string;             // 요리종류
     INFO_WGT?: string;             // 중량(1인분)
@@ -12,7 +26,7 @@ export interface Recipe {
     HASH_TAG?: string;             // 해쉬태그
     ATT_FILE_NO_MAIN?: string;     // 이미지경로(소)
     ATT_FILE_NO_MK?: string;       // 이미지경로(대)
-    RCP_PARTS_DTLS?: string;       // 재료정보
+    RCP_PARTS_DTLS: string;       // 재료정보
     MANUAL01?: string;             // 만드는법_01
     MANUAL_IMG01?: string;         // 만드는법_이미지_01
     MANUAL02?: string;             // 만드는법_02
@@ -52,5 +66,7 @@ export interface Recipe {
     MANUAL19?: string;             // 만드는법_19
     MANUAL_IMG19?: string;         // 만드는법_이미지_19
     MANUAL20?: string;             // 만드는법_20
+    MANUAL_IMG20?: string;         // 만드는법_이미지_20
     RCP_NA_TIP?: string;           // 저감 조리법 TIP
 }
+

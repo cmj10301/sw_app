@@ -5,6 +5,7 @@ export default function Navigation() {
         <nav>
             <ul>
                 <li><Link href="/">Home</Link></li>
+                <li><Link href="/frige">frige</Link></li>
                 <li><Link href="/roulette">roulette</Link></li>
             </ul>
         </nav>
