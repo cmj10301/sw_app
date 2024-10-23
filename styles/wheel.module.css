@@ -1,0 +1,19 @@
+/* Roulette.module.css */
+.container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .arrow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -100%); /* 화살표를 위로 이동 */
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid red;
+    z-index: 1;
+  }
+  

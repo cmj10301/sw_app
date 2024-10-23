@@ -64,8 +64,7 @@ export default async function Home() {
   //   await db.collection(collection.name).deleteMany({});
   // } 
 
-  let result = await db.collection('post').find().toArray();x``
-
+  let result = await db.collection('post').find().toArray();
   return (
     <div>
       {result.map((a) => {
