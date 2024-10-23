@@ -34,6 +34,9 @@ export default async function RecipeDetail({params} : {params:{id:string}}){
                 <button>좋아요</button>
                 <span>{result.like}</span>
             </form>
+
+            <button>수정</button>
+            <button>삭제</button>
         </div>
     )
 }

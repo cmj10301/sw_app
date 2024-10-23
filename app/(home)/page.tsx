@@ -68,11 +68,10 @@ export default async function Home() {
   return (
     <div>
       {result.map((a) => {
-        console.log(a._id)
         return (
         <div key={a._id} className={styles.div}>
-          <img src={a.ATT_FILE_NO_MAIN} alt={a.RCP_NM} className={styles.a}/>
-          <Link href={`/recipe/${a._id}`}>{a.RCP_NM} </Link>
+          <img src={a.ATT_FILE_NO_MAIN} alt={a.RCP_NM} className={styles.img}/>
+          <Link className={styles.a}href={`/recipe/${a._id}`}>{a.RCP_NM} </Link>
           <span>👍 : {a.like?a.like:0}</span>
         </div>
       )})}
