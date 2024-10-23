@@ -1,4 +1,5 @@
-import like from "@/app/pages/api/like";
+
+import like from "@/pages/api/like";
 import { connectDB } from "@/util/database.js";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";

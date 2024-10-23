@@ -2,6 +2,7 @@ import { FRecipe, Recipe } from "@/interface/api.type";
 import { API_URI } from "@/util/constant";
 import Link from "next/link";
 import { connectDB } from "../../util/database.js";
+import styles from "../../styles/home.module.css"
 
 async function getRecipe() {
   const response = await fetch(API_URI);
@@ -50,6 +51,7 @@ export default async function Home() {
       like: 0,
       MANUAL: manual,
       MANUAL_IMG: manualImg,
+      password : "",
     };
 
     // MongoDB에 필터링된 데이터 저장 (업데이트 또는 삽입)
@@ -62,18 +64,20 @@ export default async function Home() {
   //   await db.collection(collection.name).deleteMany({});
   // } 
 
-  let result = await db.collection('post').find().toArray();
+  let result = await db.collection('post').find().toArray();x``
 
   return (
     <div>
       {result.map((a) => {
+        console.log(a._id)
         return (
-        <div key={a._id}>
+        <div key={a._id} className={styles.div}>
+          <img src={a.ATT_FILE_NO_MAIN} alt={a.RCP_NM} className={styles.a}/>
           <Link href={`/recipe/${a._id}`}>{a.RCP_NM} </Link>
           <span>👍 : {a.like?a.like:0}</span>
         </div>
       )})}
-      <Link href="/">글쓰기</Link>
+      <Link href="/write">글쓰기</Link>
     </div>
   )
 }

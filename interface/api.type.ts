@@ -10,6 +10,7 @@ export interface FRecipe {
     RCP_PAT2?: string; // 레시피 종류
     RCP_WAY2?: string; // 조리 방법
     like: number; // 좋아요 수
+    password: string; // 비밀번호
 }
 
 export interface Recipe {
