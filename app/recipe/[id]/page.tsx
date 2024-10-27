@@ -3,6 +3,7 @@ import like from "@/pages/api/like";
 import { connectDB } from "@/util/database.js";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 export default async function RecipeDetail({params} : {params:{id:string}}){
     const {id} = await params;
@@ -34,8 +35,7 @@ export default async function RecipeDetail({params} : {params:{id:string}}){
                 <button>좋아요</button>
                 <span>{result.like}</span>
             </form>
-
-            <button>수정</button>
+            <Link href={`/edit/${id}`}>수정</Link>
             <button>삭제</button>
         </div>
     )
