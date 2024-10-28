@@ -10,10 +10,6 @@ export default async function RecipeDetail({params}){
 
     let db = (await connectDB).db('forum');
     let result = await db.collection('post').findOne({_id : new ObjectId({id})})
-    // const manual = Object.keys(result)
-    //     .filter(key => key.startsWith('MANUAL') && !key.includes('IMG'))
-    //     .map(key => result[key])
-    //     .filter(step => step !== "");
 
     async function like_(formData) {
         'use server'
