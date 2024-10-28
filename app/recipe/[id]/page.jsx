@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
-export default async function RecipeDetail({params} : {params:{id:string}}){
+export default async function RecipeDetail({params}){
     const {id} = await params;
 
     let db = (await connectDB).db('forum');
