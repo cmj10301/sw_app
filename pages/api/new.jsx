@@ -2,9 +2,6 @@ import { connectDB } from "../../util/database.js";
 
 export default async function handler(request, response) {
     if (request.method == 'POST') {
-
-        console.log(request.body)
-
         request.body.like = 0
 
         const db = (await connectDB).db("forum");

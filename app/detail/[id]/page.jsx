@@ -6,6 +6,8 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import DeleteModal from '../../../component/modal';
+import Modals from '../../../component/modal';
+import { Modal } from 'react-bootstrap';
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -45,8 +47,8 @@ export default async function RecipeDetail({params}){
                 <button>좋아요</button>
                 <span>{result.like}</span>
             </form>
-            <Link href={`/edit/${id}`}>수정</Link>
-            <DeleteModal postId={stringId} postPassword={result.비밀번호}></DeleteModal>
+            <Modals id={stringId} password = {result.비밀번호} value="수정"/>
+            <Modals id={stringId} password = {result.비밀번호} value="삭제"/>
         </div>
     )
 }

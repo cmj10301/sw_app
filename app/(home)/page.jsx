@@ -2,6 +2,8 @@ import Link from "next/link";
 import { connectDB } from "../../util/database.js";
 import styles from "../../styles/home.module.css"
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   let db = (await connectDB).db('forum');
   let result = await db.collection('post').find().toArray();

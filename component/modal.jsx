@@ -1,58 +1,67 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+'use client'
 
-export default function DeleteModal({ postId, postPassword }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [password, setPassword] = useState('');
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-  const toggleModal = () => setIsOpen(!isOpen);
+export default function Modals({id, password, value}) {
+  const router = useRouter();
+  const [Inputpassword, setInputpassword] = useState('');
+  const [show, setShow] = useState(false);
 
-  const handleDelete = async () => {
-    if (password === postPassword) {
-      const response = await fetch(`/api/delete`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ postId, password }), // 비밀번호도 함께 보냄
-      });
-  
-      if (response.ok) {
-        alert('게시글이 삭제되었습니다.');
-        toggleModal();
-        window.location.href = '/';
+  const handlepasswordChange = (event) => {
+    setInputpassword(event.target.value);
+  }
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const 으아아 = async () => {
+    if (password === Inputpassword) {
+      if (value === '수정') {
+        router.push(`/edit/${id}`);
       } else {
-        alert('비밀번호가 일치하지 않습니다.');
+        const response = await fetch('/api/delete', {
+          method: 'DELETE', body : JSON.stringify({id, password})
+        })
+
+        if (response.ok) {
+          alert("게시글이 삭제되었습니다.");
+          handleClose();
+          window.location.href = '/';
+        } else {
+          alert("비밀번호가 틀렸습니다.");
+        }
       }
     } else {
-      alert('비밀번호가 일치하지 않습니다.');
+      alert("비밀번호가 틀렸습니다.");
     }
-  };
-  
-  
+    
+  }
 
   return (
-    <div>
-      <button onClick={toggleModal}>삭제</button>
+    <>
+      <Button variant="primary" onClick={handleShow}>
+        {value}
+      </Button>
 
-      <Modal
-        isOpen={isOpen}
-        onRequestClose={toggleModal}
-        contentLabel="게시글 삭제"
-        className="modal-content"
-        overlayClassName="modal-overlay"
-      >
-        <h2>게시글 삭제</h2>
-        <p>비밀번호를 입력하세요:</p>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={handleDelete}>확인</button>
-        <button onClick={toggleModal}>취소</button>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>비밀번호 입력 창</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <input type="password" placeholder='비밀번호를 입력하세요.' value={Inputpassword} onChange={handlepasswordChange}></input>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            취소
+          </Button>
+          <Button variant="primary" onClick={으아아}>
+            입력
+          </Button>
+        </Modal.Footer>
       </Modal>
-    </div>
+    </>
   );
 }

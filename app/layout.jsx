@@ -1,5 +1,6 @@
 import "../styles/global.css";
 import Navigation from "../component/navigation"
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const metadata = {
   title: 'Next.js',
