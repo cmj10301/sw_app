@@ -13,6 +13,7 @@ const DOMPurify = createDOMPurify(window);
 export default async function RecipeDetail({params:{id}}){
     let db = (await connectDB).db('forum');
     let result = await db.collection('post').findOne({_id : new ObjectId(id)})
+    console.log(result)
 
     async function like_(formData) {
         'use server'
@@ -41,7 +42,7 @@ export default async function RecipeDetail({params:{id}}){
             }
             </Container>
             <hr></hr>
-            <h2>내용</h2>
+            <h2>조리 방법</h2>
             <div dangerouslySetInnerHTML={{__html : sanitizedContent}}/>
             <hr></hr>
             <form action={like_} className='mb-3'>
