@@ -9,6 +9,7 @@ export default function Modals({id, password, value}) {
   const router = useRouter();
   const [Inputpassword, setInputpassword] = useState('');
   const [show, setShow] = useState(false);
+  const dmdldl = (value === '수정') ? "primary" : "danger";
 
   const handlepasswordChange = (event) => {
     setInputpassword(event.target.value);
@@ -42,7 +43,7 @@ export default function Modals({id, password, value}) {
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      <Button variant={dmdldl} onClick={handleShow}>
         {value}
       </Button>
 
