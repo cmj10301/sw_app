@@ -6,14 +6,14 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr : false});
 import 'react-quill/dist/quill.snow.css';
 
 export default function PostForm({ initialData = {}, id }) {
-    const [ingredients, setIngredients] = useState(initialData.재료들 || [{ name: '', amount: '' }]);
+    const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
 
     const [content, setContent] = useState(initialData.내용 || ''); // Quill를 위한 useState
 
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
         e.preventDefault();
-        setIngredients((prev) => [...prev, { name: '', amount: '' }]);
+        setIngredients((prev) => [...prev, { 재료: '', 갯수: '' }]);
     };
 
     //재료 삭제 핸들러
@@ -40,9 +40,9 @@ export default function PostForm({ initialData = {}, id }) {
             제목: e.target.제목.value,
             비밀번호 : e.target.비밀번호.value,
             내용: content,
-            재료들: ingredients.filter(ingredient => (ingredient.name || '').trim() !== '' && (ingredient.amount || '').trim() !== '').map(ingredient => ({
-                재료: ingredient.name,
-                갯수: ingredient.amount,
+            재료들: ingredients.filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '').map(ingredient => ({
+                재료: ingredient.재료,
+                갯수: ingredient.갯수,
             })),
         };
         
@@ -74,7 +74,7 @@ export default function PostForm({ initialData = {}, id }) {
                             name={`ingredient_name_${index}`}
                             placeholder="재료 이름을 입력하세요."
                             defaultValue={ingredient.재료}
-                            onChange={(e) => handleIngredientChange(index, 'name', e.target.value)}
+                            onChange={(e) => handleIngredientChange(index, '재료', e.target.value)}
                             required
                         />
                         <input
@@ -82,7 +82,7 @@ export default function PostForm({ initialData = {}, id }) {
                             name={`ingredient_amount_${index}`}
                             placeholder="재료 양을 입력하세요."
                             defaultValue={ingredient.갯수}
-                            onChange={(e) => handleIngredientChange(index, 'amount', e.target.value)}
+                            onChange={(e) => handleIngredientChange(index, '갯수', e.target.value)}
                             required
                         />
                         <button type="button" onClick ={() => handleDeleteIngredient(index)}>삭제</button>
