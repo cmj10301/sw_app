@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { connectDB } from "../../util/database.js";
-import styles from "../../styles/home.module.css"
+import { Container, ListGroup, ListGroupItem } from "react-bootstrap";
 
 export const dynamic = 'force-dynamic';
 
@@ -10,15 +10,18 @@ export default async function Home() {
 
   return (
     <div>
-      {result.map((a) => {
-        return (
-        <div key={a._id} className={styles.div}>
-          {/* <img src={a.미리보기이미지} alt={a.이름} className={styles.img}/> */}
-          <Link className={styles.a} href={`/detail/${a._id}`}>{a.제목} </Link>
-          <span>👍 : {a.like?a.like:0}</span>
-        </div>
-      )})}
-      <Link href="/write">글쓰기</Link>
+      <h2>글 목록</h2>
+      <ListGroup className="mx-5">
+        {result.map((a) => {
+          return (
+          <ListGroupItem key={a._id} action href={`/detail/${a._id}`}>
+            {/* <img src={a.미리보기이미지} alt={a.이름} className={styles.img}/> */}
+            {a.제목}
+            <span>👍 : {a.like?a.like:0}</span>
+          </ListGroupItem>
+        )})}
+      </ListGroup>
+      <Link href="/write" className="btn btn-primary m-4">✏️글쓰기</Link>
     </div>
   )
 }

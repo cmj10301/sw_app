@@ -5,7 +5,7 @@ import { connectDB } from "../../../util/database.js";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import Modals from '../../../component/modal';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row, Stack } from 'react-bootstrap';
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -31,24 +31,26 @@ export default async function RecipeDetail({params:{id}}){
             <Container>
             {
                 result.재료들.map((i, a)=> {
-                    console.log(a)
                     return (
                         <Row key = {a}>
-                            <Col>{i.재료}</Col>
-                            <Col>{i.갯수}</Col>x
+                            <Col xs={4}>{i.재료}</Col>
+                            <Col xs={2}>{i.갯수}</Col>
                         </Row>
                     )
                 })
             }
             </Container>
+            <hr></hr>
+            <h2>내용</h2>
             <div dangerouslySetInnerHTML={{__html : sanitizedContent}}/>
             <hr></hr>
-            <form action={like_}>
-                <button>좋아요</button>
-                <span>{result.like}</span>
+            <form action={like_} className='mb-3'>
+                <Button type='submit' className=''>👍 {result.like}</Button>
             </form>
-            <Modals id={stringId} password = {result.비밀번호} value="수정"/>
-            <Modals id={stringId} password = {result.비밀번호} value="삭제"/>
+            <Stack direction='horizontal' gap={3}>
+                <Modals id={stringId} password = {result.비밀번호} value="수정"/>
+                <Modals id={stringId} password = {result.비밀번호} value="삭제"/>
+            </Stack>
         </div>
     )
 }
