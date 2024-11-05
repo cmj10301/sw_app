@@ -1,14 +1,11 @@
 'use client'
 
-import dynamic from 'next/dynamic';
 import { useState } from 'react';
-const ReactQuill = dynamic(() => import('react-quill'), { ssr : false});
-import 'react-quill/dist/quill.snow.css';
+import TextEditor from '../component/textEditor';
 
 export default function PostForm({ initialData = {}, id }) {
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
-
-    const [content, setContent] = useState(initialData.내용 || ''); // Quill를 위한 useState
+    const [content, setContent] = useState(initialData.내용 || ''); 
 
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
@@ -63,6 +60,10 @@ export default function PostForm({ initialData = {}, id }) {
         }
     };
 
+    const handleContentChange = (value) => {
+        setContent(value);
+    }
+
     return (
         <form onSubmit={handleSubmit}>
             <ul>
@@ -90,13 +91,11 @@ export default function PostForm({ initialData = {}, id }) {
                 ))}
                 <li> <button type="button" onClick={handleAddIngredient}>재료 추가</button> </li>
             </ul>
-            <div style={{height : "300px"}}>
-                <ReactQuill value={content} onChange={setContent} style={{width : "900px", height : "100%"}}/>
-            </div>
-            <div style={{marginTop: "50px"}}>
+            <div>
+                <TextEditor value={content} onChange={handleContentChange}/>
                 <input type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></input>
                 <button type="submit">제출</button>
             </div>
-        </form>
+         </form>
     );
 }

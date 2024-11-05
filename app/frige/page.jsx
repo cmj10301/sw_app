@@ -1,3 +1,7 @@
+import ImageInput from "../../component/image"
+
 export default function Frige() {
-    return <h1>Frige</h1>
+    return (
+        <ImageInput></ImageInput>
+    )
 }

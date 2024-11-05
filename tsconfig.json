@@ -28,7 +28,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "component/image.jsx"  ],
   "exclude": [
     "node_modules"
   ]
