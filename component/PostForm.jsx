@@ -6,7 +6,6 @@ import TextEditor from '../component/textEditor';
 export default function PostForm({ initialData = {}, id }) {
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
     const [content, setContent] = useState(initialData.내용 || ''); 
-
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
         e.preventDefault();
@@ -60,6 +59,7 @@ export default function PostForm({ initialData = {}, id }) {
         }
     };
 
+    
     const handleContentChange = (value) => {
         setContent(value);
     }
