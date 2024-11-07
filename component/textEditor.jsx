@@ -1,31 +1,62 @@
 "use client";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
+import CustomUploadAdapter from "../pages/api/CustomUploadAdapter";
 
-import React, { useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import 'react-quill/dist/quill.snow.css';
+const CKEditor = dynamic(
+  async () => {
+    const { CKEditor } = await import("@ckeditor/ckeditor5-react");
+    const ClassicEditor = (await import("@ckeditor/ckeditor5-build-classic")).default;
+    return ({ onChange, editorData, config}) => (
+      <CKEditor editor={ClassicEditor} data={editorData} onChange={onChange} config={config}/>
+    );
+  },
+  { ssr: false } // 서버 측 렌더링 비활성화
+);
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+export default function TextEditor({onDataChange, EditorContent}) {
+  const [editorData, setEditorData] = useState(EditorContent);
 
-const TextEditor = ({ value, onChange }) => {
-  const modules = useMemo(() => ({
-    toolbar: {
-      container: [
-        [{ 'header': [1, 2, false] }],
-        ['bold', 'italic', 'underline'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-        ['image'],
-      ],
-    }
-  }), []);
+  useEffect(() => {
+    setEditorData(EditorContent);
+  }, [EditorContent])
+
+  const handleEditorChange = (event, editor) => {
+    const data = editor.getData();
+    setEditorData(data);
+    onDataChange(data);
+  };
+
+  const editorConfig = {
+    placeholder: "내용을 입력하세요...",
+    toolbar: [
+      "heading",
+      "|",
+      "bold",
+      "italic",
+      "link",
+      "bulletedList",
+      "numberedList",
+      "|",
+      "imageUpload",
+      "blockQuote",
+    ],
+    extraPlugins: [MyCustomUploadAdapterPlugin],
+  };
+
+  function MyCustomUploadAdapterPlugin(editor) {
+    editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
+      return new CustomUploadAdapter(loader);
+    };
+  }
+
   return (
-    <ReactQuill
-      value={value}
-      onChange={onChange}
-      modules={modules}
-      theme="snow"
-      placeholder="텍스트를 입력하세요..."
-    />
+    <div>
+      <CKEditor
+        onChange={handleEditorChange}
+        editorData={editorData}
+        config={editorConfig}
+      />
+    </div>
   );
-};
-
-export default TextEditor;
+}

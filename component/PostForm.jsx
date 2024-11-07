@@ -5,7 +5,7 @@ import TextEditor from '../component/textEditor';
 
 export default function PostForm({ initialData = {}, id }) {
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
-    const [content, setContent] = useState(initialData.내용 || ''); 
+    const [EditorContent, setEditorContent] = useState(initialData.내용 || ''); 
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
         e.preventDefault();
@@ -25,17 +25,19 @@ export default function PostForm({ initialData = {}, id }) {
             )
         );
     };
-
+    
     // 폼 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const updatedContent = await uploadImagesToS3(EditorContent);
+        console.log(updatedContent)
 
         // 폼 데이터 수집
         const formData = {
             _id : id,
             제목: e.target.제목.value,
             비밀번호 : e.target.비밀번호.value,
-            내용: content,
+            내용: updatedContent,
             재료들: ingredients.filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '').map(ingredient => ({
                 재료: ingredient.재료,
                 갯수: ingredient.갯수,
@@ -59,11 +61,62 @@ export default function PostForm({ initialData = {}, id }) {
         }
     };
 
+    async function uploadImagesToS3(editorData) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(editorData, "text/html");
+        const images = doc.querySelectorAll("img");
     
-    const handleContentChange = (value) => {
-        setContent(value);
+        for (let img of images) {
+            const base64Data = img.src;
+    
+            if (base64Data.startsWith("data:image")) {
+                // Base64 이미지를 Blob으로 변환
+                const blob = await fetch(base64Data).then((res) => res.blob());
+                
+                
+                const fileName = `${Date.now()}_image.png`;
+    
+                try {
+                    // S3 프리사인드 URL 요청
+                    const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
+                        method: "GET",
+                    });
+                    
+                    const presignedData = await presignedResponse.json();
+                    
+                    if (!presignedResponse.ok || !presignedData.url) {
+                        throw new Error("프리사인드 URL 생성 실패");
+                    }
+    
+                    // 프리사인드 URL을 사용하여 S3에 파일 업로드
+                    const formData = new FormData();
+                    Object.entries(presignedData.fields).forEach(([key, value]) => {
+                        formData.append(key, value);
+                    });
+                    formData.append("file", blob);
+    
+                    const uploadResponse = await fetch(presignedData.url, {
+                        method: "POST",
+                        body: formData,
+                    });
+    
+                    if (!uploadResponse.ok) {
+                        throw new Error("S3 업로드 실패");
+                    }
+    
+                    // S3 업로드 완료 후 URL 설정
+                    img.src = `${presignedData.url}/${presignedData.fields.key}`;
+                } catch (error) {
+                    console.error("이미지 업로드 오류:", error);
+                }
+            }
+        }
+    
+        // 업데이트된 HTML 문자열을 반환
+        return doc.body.innerHTML;
     }
-
+    
+    
     return (
         <form onSubmit={handleSubmit}>
             <ul>
@@ -92,7 +145,7 @@ export default function PostForm({ initialData = {}, id }) {
                 <li> <button type="button" onClick={handleAddIngredient}>재료 추가</button> </li>
             </ul>
             <div>
-                <TextEditor value={content} onChange={handleContentChange}/>
+                <TextEditor EditorContent={EditorContent} onDataChange={setEditorContent}/>
                 <input type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></input>
                 <button type="submit">제출</button>
             </div>

@@ -20,7 +20,7 @@ export default async function handler(요청, 응답) {
             Expires: 60, // seconds
         });
         url.url = `https://s3.ap-northeast-2.amazonaws.com/${process.env.BUCKET_NAME}`
-        
+
         응답.status(200).json(url);
     } catch (error) {
         console.error("오류 : ", error);

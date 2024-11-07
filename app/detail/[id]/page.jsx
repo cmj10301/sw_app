@@ -13,7 +13,6 @@ const DOMPurify = createDOMPurify(window);
 export default async function RecipeDetail({params:{id}}){
     let db = (await connectDB).db('forum');
     let result = await db.collection('post').findOne({_id : new ObjectId(id)})
-    console.log(result)
 
     async function like_(formData) {
         'use server'
