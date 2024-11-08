@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, Suspense } from "react";
-import { ListGroup, ListGroupItem, Pagination, Spinner } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Card, Col, Pagination, Row, Spinner } from "react-bootstrap";
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export default function Home() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setloading] = useState(true);
-    const limit = 10; // 한 페이지당 게시물 수
+    const limit = 6; // 한 페이지당 게시물 수
 
     useEffect(() => {
         async function fetchPosts() {
@@ -28,22 +28,42 @@ export default function Home() {
         setCurrentPage(page);
     };
 
+    console.log(posts)
+
     return (
         <div>
-            <h2>글 목록</h2>
             {loading ? (
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
             ) : (
-                <ListGroup className="mx-5">
-                    {posts.map((a) => (
-                        <ListGroupItem key={a._id} action href={`/detail/${a._id}`}>
-                            {a.제목}
-                            <span>👍 : {a.like || 0}</span>
-                        </ListGroupItem>
-                    ))}
-                </ListGroup>
+                // <ListGroup className="mx-5">
+                //     {posts.map((a) => (
+                //         <ListGroupItem key={a._id} action href={`/detail/${a._id}`}>
+                //             {a.제목}
+                //             <span>👍 : {a.like || 0}</span>
+                //         </ListGroupItem>
+                //     ))}
+                // </ListGroup>
+                <div>
+                    <Row className="m-4">
+                        {posts.map((a) => (
+                            <Col key={a._id} lg={2} md={4} sm={6} className="mb-4">
+                                <Link href={`/detail/${a._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <Card>
+                                        <Card.Img variant="top" src={a.썸네일 || '/default.jpg'} />
+                                        <Card.Body>
+                                            <Card.Title>{a.제목}</Card.Title>
+                                            <Card.Text>
+                                                👍 : {a.like || 0}
+                                            </Card.Text>
+                                        </Card.Body>
+                                    </Card>
+                                </Link>
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
             )}
 
             {/* 페이징 버튼 */}

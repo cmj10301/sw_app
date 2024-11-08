@@ -12,7 +12,7 @@ export default async function handler(req, res) {
         const totalDocuments = await collection.countDocuments(); // 전체 문서 수 계산
         const totalPages = Math.ceil(totalDocuments / limitNumber);
 
-        const data = await collection.find()
+        const data = await collection.find({}, {projection : {_id : 1, 제목: 1, like : 1, 썸네일 : 1} })
             .sort({ _id: -1 }) // 최신 글 순으로 정렬
             .skip(skip)
             .limit(limitNumber)
