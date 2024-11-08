@@ -40,15 +40,24 @@ export default function Home() {
 
             {/* 페이징 버튼 */}
             <Pagination className="mt-3 d-flex justify-content-center">
-                {Array.from({ length: totalPages }, (_, i) => (
-                    <Pagination.Item
-                        key={i + 1}
-                        active={i + 1 === currentPage}
-                        onClick={() => handlePageChange(i + 1)}
-                    >
-                        {i + 1}
-                    </Pagination.Item>
-                ))}
+                <Pagination.First onClick={() => handlePageChange(1)} />
+                <Pagination.Prev onClick={() => handlePageChange(Math.max(currentPage - 10, 1))} />
+                {Array.from({ length: Math.min(10, totalPages) }, (_, i) => {
+                    const page = Math.floor((currentPage - 1) / 10) * 10 + i + 1;
+                    if (page > totalPages) return null;
+
+                    return (
+                        <Pagination.Item
+                            key={page}
+                            active={page === currentPage}
+                            onClick={() => handlePageChange(page)}
+                        >
+                            {page}
+                        </Pagination.Item>
+                    );
+                })}
+                <Pagination.Next onClick={() => handlePageChange(Math.min(currentPage + 10, totalPages))} />
+                <Pagination.Last onClick={() => handlePageChange(totalPages)} />
             </Pagination>
 
             <Link href="/write" className="btn btn-primary m-4">✏️글쓰기</Link>
