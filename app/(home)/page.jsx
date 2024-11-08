@@ -37,14 +37,6 @@ export default function Home() {
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
             ) : (
-                // <ListGroup className="mx-5">
-                //     {posts.map((a) => (
-                //         <ListGroupItem key={a._id} action href={`/detail/${a._id}`}>
-                //             {a.제목}
-                //             <span>👍 : {a.like || 0}</span>
-                //         </ListGroupItem>
-                //     ))}
-                // </ListGroup>
                 <div>
                     <Row className="m-4">
                         {posts.map((a) => (
