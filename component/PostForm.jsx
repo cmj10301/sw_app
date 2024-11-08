@@ -30,7 +30,6 @@ export default function PostForm({ initialData = {}, id }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const updatedContent = await uploadImagesToS3(EditorContent);
-        console.log(updatedContent)
 
         // 폼 데이터 수집
         const formData = {

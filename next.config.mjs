@@ -1,7 +1,5 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-      // 여기에서 Strict Mode를 비활성화합니다.
-  };
+const nextConfig = {};
   
-  export default nextConfig;
+export default nextConfig;
   
