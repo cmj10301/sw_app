@@ -1,11 +1,15 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextEditor from '../component/textEditor';
+import { Button, Col, Form, Row } from 'react-bootstrap';
+import Image from 'next/image';
 
 export default function PostForm({ initialData = {}, id }) {
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
-    const [EditorContent, setEditorContent] = useState(initialData.내용 || ''); 
+    const [EditorContent, setEditorContent] = useState(initialData.내용 || '');
+    const [src, setSrc] = useState(initialData.썸네일 || '')
+
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
         e.preventDefault();
@@ -25,24 +29,44 @@ export default function PostForm({ initialData = {}, id }) {
             )
         );
     };
-    
+    //파일 선택 시 이미지 미리보기 및 크기 설정
+    const handleImageChange = (e) => {
+        const file = e.target.files[0]
+        if (!file) {
+            console.error("파일이 선택되지 않았습니ㅏㄷ")
+            return;
+        }
+        const previewUrl = URL.createObjectURL(file);
+        setSrc(previewUrl)
+    }
+
     // 폼 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         const updatedContent = await uploadImagesToS3(EditorContent);
 
-        // 폼 데이터 수집
+        let updated썸네일;
+        if (src.startsWith("blob:")) {
+            updated썸네일 = await uploadThumbnailToS3(src);
+        } else {
+            updated썸네일 = src;
+        }
+
         const formData = {
-            _id : id,
+            _id: id,
             제목: e.target.제목.value,
-            비밀번호 : e.target.비밀번호.value,
+            비밀번호: e.target.비밀번호.value,
+            썸네일: updated썸네일,
             내용: updatedContent,
-            재료들: ingredients.filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '').map(ingredient => ({
-                재료: ingredient.재료,
-                갯수: ingredient.갯수,
-            })),
+            재료들: ingredients
+                .filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '')
+                .map(ingredient => ({
+                    재료: ingredient.재료,
+                    갯수: ingredient.갯수,
+                })),
         };
-        
+
         const apiEndpoint = id ? '/api/edit' : '/api/new';
         const response = await fetch(apiEndpoint, {
             method: "POST",
@@ -60,94 +84,146 @@ export default function PostForm({ initialData = {}, id }) {
         }
     };
 
-    async function uploadImagesToS3(editorData) {
+    async function uploadImagesToS3(data) {
+        if (!data) throw new Error("uploadImagesToS3에서 넘어온 값 없음.");
+
         const parser = new DOMParser();
-        const doc = parser.parseFromString(editorData, "text/html");
+        const doc = parser.parseFromString(data, "text/html");
         const images = doc.querySelectorAll("img");
-    
+
         for (let img of images) {
             const base64Data = img.src;
-    
-            if (base64Data.startsWith("data:image")) {
-                // Base64 이미지를 Blob으로 변환
+
+            if (base64Data.startsWith("data:image") || base64Data.startsWith("blob:")) {
                 const blob = await fetch(base64Data).then((res) => res.blob());
-                
-                
                 const fileName = `${Date.now()}_image.png`;
-    
+
                 try {
-                    // S3 프리사인드 URL 요청
                     const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
                         method: "GET",
                     });
-                    
+
                     const presignedData = await presignedResponse.json();
-                    
+
                     if (!presignedResponse.ok || !presignedData.url) {
                         throw new Error("프리사인드 URL 생성 실패");
                     }
-    
-                    // 프리사인드 URL을 사용하여 S3에 파일 업로드
+
                     const formData = new FormData();
                     Object.entries(presignedData.fields).forEach(([key, value]) => {
                         formData.append(key, value);
                     });
                     formData.append("file", blob);
-    
+
                     const uploadResponse = await fetch(presignedData.url, {
                         method: "POST",
                         body: formData,
                     });
-    
+
                     if (!uploadResponse.ok) {
                         throw new Error("S3 업로드 실패");
                     }
-    
-                    // S3 업로드 완료 후 URL 설정
+
                     img.src = `${presignedData.url}/${presignedData.fields.key}`;
                 } catch (error) {
                     console.error("이미지 업로드 오류:", error);
                 }
             }
         }
-    
-        // 업데이트된 HTML 문자열을 반환
+
         return doc.body.innerHTML;
     }
-    
-    
+
+    async function uploadThumbnailToS3(blobUrl) {
+        const blob = await fetch(blobUrl).then(res => res.blob());
+        const fileName = `${Date.now()}_thumbnail.png`;
+
+        try {
+            const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
+                method: "GET",
+            });
+
+            const presignedData = await presignedResponse.json();
+
+            if (!presignedResponse.ok || !presignedData.url) {
+                throw new Error("프리사인드 URL 생성 실패");
+            }
+
+            const formData = new FormData();
+            Object.entries(presignedData.fields).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
+            formData.append("file", blob);
+
+            const uploadResponse = await fetch(presignedData.url, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                throw new Error("S3 썸네일 업로드 실패");
+            }
+
+            return `${presignedData.url}/${presignedData.fields.key}`;
+        } catch (error) {
+            console.error("썸네일 업로드 오류:", error);
+            return null;
+        }
+    }
+
     return (
-        <form onSubmit={handleSubmit}>
-            <ul>
-                <li><input type="text" name="제목" placeholder="글 제목을 입력하세요." defaultValue={initialData.제목} required/></li>
+        <>
+            <Form onSubmit={handleSubmit}>
+                <Form.Control className='my-3' type="text" name="제목" placeholder="글 제목을 입력하세요." defaultValue={initialData.제목} required />
+                <Form.Group>
+                    <Form.Label>썸네일 이미지  등록</Form.Label>
+                    <Form.Control type="file" name="썸네일" onChange={(e) => handleImageChange(e)} />
+                    <div style={{ width: "100%", maxWidth: "200px" }}>
+                        {src && (
+                            <img
+                                src={src}
+                                alt='썸네일 이미지'
+                                style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                            />
+                        )}
+                    </div>
+
+                </Form.Group>
+
                 {ingredients.map((ingredient, index) => (
-                    <li key={index}>
-                        <input
-                            type="text"
-                            name={`ingredient_name_${index}`}
-                            placeholder="재료 이름을 입력하세요."
-                            defaultValue={ingredient.재료}
-                            onChange={(e) => handleIngredientChange(index, '재료', e.target.value)}
-                            required
-                        />
-                        <input
-                            type="text"
-                            name={`ingredient_amount_${index}`}
-                            placeholder="재료 양을 입력하세요."
-                            defaultValue={ingredient.갯수}
-                            onChange={(e) => handleIngredientChange(index, '갯수', e.target.value)}
-                            required
-                        />
-                        <button type="button" onClick ={() => handleDeleteIngredient(index)}>삭제</button>
-                    </li>
+                    <Form.Group as={Row} className='my-3' key={index}>
+                        <Col>
+                            <Form.Control
+                                type="text"
+                                id={`ingredient_name_${index}`}
+                                name={`ingredient_name_${index}`}
+                                placeholder="재료 이름을 입력하세요."
+                                defaultValue={ingredient.재료}
+                                onChange={(e) => handleIngredientChange(index, '재료', e.target.value)}
+                                required />
+                        </Col>
+                        <Col>
+                            <Form.Control
+                                type="text"
+                                id={`ingredient_amount_${index}`}
+                                name={`ingredient_amount_${index}`}
+                                placeholder="재료 양을 입력하세요."
+                                defaultValue={ingredient.갯수}
+                                onChange={(e) => handleIngredientChange(index, '갯수', e.target.value)}
+                                required />
+                        </Col>
+                        <Col>
+                            <Button variant="secondary" onClick={() => handleDeleteIngredient(index)}>삭제</Button>
+                        </Col>
+                    </Form.Group>
                 ))}
-                <li> <button type="button" onClick={handleAddIngredient}>재료 추가</button> </li>
-            </ul>
-            <div>
-                <TextEditor EditorContent={EditorContent} onDataChange={setEditorContent}/>
-                <input type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></input>
-                <button type="submit">제출</button>
-            </div>
-         </form>
+                <Button variant="secondary" className='mb-3' onClick={handleAddIngredient}>재료 추가</Button>
+                <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent} />
+                <Form.Group className='my-3' as={Row} controlId='제출'>
+                    <Col><Form.Control type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></Form.Control></Col>
+                    <Col><Button variant="primary" type='submit'>제출</Button></Col>
+                </Form.Group>
+            </Form>
+        </>
     );
 }
