@@ -5,7 +5,7 @@ import { connectDB } from "../../../util/database.js";
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import Modals from '../../../component/modal';
-import { Button, Col, Container, Row, Stack } from 'react-bootstrap';
+import { Button, Col, Container, Image, Row, Stack } from 'react-bootstrap';
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -26,6 +26,9 @@ export default async function RecipeDetail({params:{id}}){
         
         <div>
             <h1>{result.제목}</h1>
+            <hr></hr>
+            <h1>미리보기 이미지</h1>
+            { result.썸네일 ? <Image src={result.썸네일} alt="미리보기 이미지" style={{width : "150px" , height : "auto"}} rounded/>  : ""}
             <hr></hr>
             <h2>필요 재료</h2>
             <Container>
