@@ -31,6 +31,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     //파일 선택 시 이미지 미리보기 및 크기 설정
     const handleImageChange = (e) => {
         const file = e.target.files[0]
+        console.log("파일 선택 확인", file)
         if (!file) {
             console.error("파일이 선택되지 않았습니다")
             return;
