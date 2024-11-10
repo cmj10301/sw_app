@@ -134,10 +134,11 @@ export default function PostForm({ initialData = '', id = null, author = null, p
 
     async function uploadThumbnailToS3(blobUrl) {
         const blob = await fetch(blobUrl).then(res => res.blob());
-        const fileName = 'Hello_thumbnail.png';
+        const fileName = `${Date.now()}_thumbnail.png`;
+        alert("fileName: " + fileName);
 
         try {
-            const presignedResponse = await fetch(`/api/image?file=${"dmdkdk.png"}`, {
+            const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
                 method: "GET",
             });
 
