@@ -56,18 +56,18 @@ export default async function RecipeDetail({ params: { id } }) {
             <form action={like_} className='mb-3'>
                 <Button type='submit'>👍 {result.like}</Button>
             </form>
-            {session && result.작성자 === session.user.email ? (
+            {session && result?.작성자 === session?.user?.email ? (
                 <Stack direction='horizontal' gap={3}>
-                    <Modals id={stringId} password={result.비밀번호} value="수정" />
-                    <Modals id={stringId} password={result.비밀번호} value="삭제" />
+                    <Modals id={stringId} password={result?.비밀번호} value="수정" />
+                    <Modals id={stringId} password={result?.비밀번호} value="삭제" />
                 </Stack>
             ) : null}
             {
-                result.비밀번호 
+                result?.비밀번호 
                     ? (<Stack direction='horizontal' gap={3}>
-                <Modals id={stringId} password={result.비밀번호} value="수정" />
-                <Modals id={stringId} password={result.비밀번호} value="삭제" />
-            </Stack>) : result.작성자.user.email === session.user.email ? (<Stack direction='horizontal' gap={3}>
+                <Modals id={stringId} password={result?.비밀번호} value="수정" />
+                <Modals id={stringId} password={result?.비밀번호} value="삭제" />
+            </Stack>) : result?.작성자?.user?.email === session?.user?.email ? (<Stack direction='horizontal' gap={3}>
                 <Modals id={stringId} value="수정" />
                 <Modals id={stringId} value="삭제" />
             </Stack>) : null
