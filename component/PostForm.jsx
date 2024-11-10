@@ -47,7 +47,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         let updated썸네일;
         if (src.startsWith("blob:")) {
             updated썸네일 = await uploadThumbnailToS3(src);
-            alert(updated썸네일)
         } else {
             updated썸네일 = src;
         }
