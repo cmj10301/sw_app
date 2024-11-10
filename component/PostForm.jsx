@@ -31,7 +31,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     //파일 선택 시 이미지 미리보기 및 크기 설정
     const handleImageChange = (e) => {
         const file = e.target.files[0]
-        console.log("파일 선택 확인", file)
         if (!file) {
             console.error("파일이 선택되지 않았습니다")
             return;
@@ -43,7 +42,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     // 폼 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        
         const updatedContent = await uploadImagesToS3(EditorContent);
 
         let updated썸네일;
@@ -51,6 +50,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             updated썸네일 = await uploadThumbnailToS3(src);
             alert(updated썸네일)
         } else {
+            alert("else 됐음")
             updated썸네일 = src;
         }
 
@@ -135,7 +135,9 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     }
 
     async function uploadThumbnailToS3(blobUrl) {
+        console.log(blobUrl)
         const blob = await fetch(blobUrl).then(res => res.blob());
+        console.log(blob)
         const fileName = `${Date.now()}_thumbnail.png`;
 
         try {
