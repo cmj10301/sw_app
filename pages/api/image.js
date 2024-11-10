@@ -2,9 +2,6 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 
 export default async function handler(요청, 응답) {
-    console.log('S3 버킷 이름 : ', proce.env.BUCKET_NAME)
-    console.log('S3 액세스 키 : ', proce.env.ACCESS_KEY)
-    console.log('S3 시크릿 키 : ', proce.env.SECRET_KEY)
     const s3 = new S3Client({
         region: 'ap-northeast-2',
         credentials: {

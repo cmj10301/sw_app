@@ -4,7 +4,7 @@ import { useState } from 'react';
 import TextEditor from '../component/textEditor';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
-export default function PostForm({ initialData = '', id = null, author = null, password = null, userInfo}) {
+export default function PostForm({ initialData = '', id = null, author = null, password = null, userInfo }) {
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
     const [EditorContent, setEditorContent] = useState(initialData.내용 || '');
     const [src, setSrc] = useState(initialData.썸네일 || '')
@@ -54,7 +54,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
 
         const formData = {
             _id: id,
-            작성자 : password? '' : userInfo,
+            작성자: password ? '' : userInfo,
             제목: e.target.제목.value,
             비밀번호: userInfo ? '' : e.target.비밀번호.value,
             썸네일: updated썸네일,
@@ -85,7 +85,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     };
 
     async function uploadImagesToS3(data) {
-        const parser = new DOMParser(); 
+        const parser = new DOMParser();
         const doc = parser.parseFromString(data, "text/html");
         const images = doc.querySelectorAll("img");
 
@@ -146,6 +146,10 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             if (!presignedResponse.ok || !presignedData.url) {
                 throw new Error("프리사인드 URL 생성 실패");
             }
+
+            console.log('S3 버킷 이름 : ', proce.env.BUCKET_NAME)
+            console.log('S3 액세스 키 : ', proce.env.ACCESS_KEY)
+            console.log('S3 시크릿 키 : ', proce.env.SECRET_KEY)
 
             const formData = new FormData();
             Object.entries(presignedData.fields).forEach(([key, value]) => {
@@ -219,9 +223,9 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                 <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent} />
                 <Form.Group className='my-3' as={Row} controlId='제출'>
                     {
-                        id 
+                        id
                             ? (author ? null : <Col><Form.Control type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></Form.Control></Col>)
-                            : (userInfo ? null :  <Col><Form.Control type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></Form.Control></Col>)
+                            : (userInfo ? null : <Col><Form.Control type='password' name="비밀번호" placeholder='글 비밀번호 입력' required></Form.Control></Col>)
                     }
                     <Col><Button variant="primary" type='submit'>제출</Button></Col>
                 </Form.Group>
