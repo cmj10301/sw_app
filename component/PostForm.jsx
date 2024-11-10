@@ -44,13 +44,13 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         e.preventDefault();
 
         const updatedContent = await uploadImagesToS3(EditorContent);
+        alert(src);
 
         let updated썸네일;
         if (src.startsWith("blob:")) {
             updated썸네일 = await uploadThumbnailToS3(src);
             alert(updated썸네일)
         } else {
-            alert("else 됐음")
             updated썸네일 = src;
         }
 
