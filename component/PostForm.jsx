@@ -147,9 +147,9 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                 throw new Error("프리사인드 URL 생성 실패");
             }
 
-            console.log('S3 버킷 이름 : ', proce.env.BUCKET_NAME)
-            console.log('S3 액세스 키 : ', proce.env.ACCESS_KEY)
-            console.log('S3 시크릿 키 : ', proce.env.SECRET_KEY)
+            console.log('S3 버킷 이름 : ', process.env.BUCKET_NAME)
+            console.log('S3 액세스 키 : ', process.env.ACCESS_KEY)
+            console.log('S3 시크릿 키 : ', process.env.SECRET_KEY)
 
             const formData = new FormData();
             Object.entries(presignedData.fields).forEach(([key, value]) => {
