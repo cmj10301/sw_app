@@ -42,7 +42,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     // 폼 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const updatedContent = await uploadImagesToS3(EditorContent);
 
         let updated썸네일;
@@ -135,10 +135,9 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     }
 
     async function uploadThumbnailToS3(blobUrl) {
-        console.log(blobUrl)
         const blob = await fetch(blobUrl).then(res => res.blob());
-        console.log(blob)
         const fileName = `${Date.now()}_thumbnail.png`;
+        console.log("fileName",fileName)
 
         try {
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
