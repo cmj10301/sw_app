@@ -104,7 +104,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                     const presignedData = await presignedResponse.json();
 
                     if (!presignedResponse.ok || !presignedData.url) {
-                        alert("프리사인드 URL 생성 실패");
+                        throw new Error("프리사인드 URL 생성 실패");
                     }
 
                     const formData = new FormData();
@@ -119,7 +119,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                     });
 
                     if (!uploadResponse.ok) {
-                        alert("S3 업로드 실패");
+                        throw new Error("S3 업로드 실패");
                     }
 
                     img.src = `${presignedData.url}/${presignedData.fields.key}`;
@@ -145,7 +145,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             const presignedData = await presignedResponse.json();
 
             if (!presignedResponse.ok || !presignedData.url) {
-                throw new Error("프리사인드 URL 생성 실패");
+                alert("프리사인드 URL 생성 실패");
             }
 
             const formData = new FormData();
@@ -160,7 +160,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             });
 
             if (!uploadResponse.ok) {
-                throw new Error("S3 썸네일 업로드 실패");
+                alert("S3 썸네일 업로드 실패");
             }
 
             return `${presignedData.url}/${presignedData.fields.key}`;
