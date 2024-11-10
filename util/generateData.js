@@ -13,7 +13,7 @@ async function insertDummyData() {
         const data = Array.from({ length: 100 }, () => ({
             제목: faker.lorem.sentence(),
             내용: faker.lorem.paragraph(),
-            비밀번호: faker.internet.password(),
+            비밀번호: 1234,
             재료들: [
                 { 재료: faker.commerce.productName(), 갯수: `${faker.number.int({ min: 1, max: 10 })}개` },
                 { 재료: faker.commerce.productName(), 갯수: `${faker.number.int({ min: 1, max: 10 })}개` },

@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
     const post = await db.collection('post').findOne({ _id: new ObjectId(id) });
 
-    if (post && post.비밀번호 === password) {
+    if (post && post.비밀번호 === password || password == null) {
       await db.collection('post').deleteOne({ _id: new ObjectId(id) });
       res.status(200).json({ message: 'Deleted successfully' });
     } else {

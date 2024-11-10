@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Card, Col, Pagination, Row, Spinner } from "react-bootstrap";
+import { Card, Col, Image, Pagination, Row, Spinner } from "react-bootstrap";
+import styles from "../../styles/ImageCard.module.css"
 
 export const dynamic = 'force-dynamic';
 
@@ -28,8 +29,6 @@ export default function Home() {
         setCurrentPage(page);
     };
 
-    console.log(posts)
-
     return (
         <div>
             {loading ? (
@@ -40,14 +39,35 @@ export default function Home() {
                 <div>
                     <Row className="m-4">
                         {posts.map((a) => (
-                            <Col key={a._id} lg={2} md={4} sm={6} className="mb-4">
+                            <Col key={a._id} lg={2} md={4} sm={6} xs={12} className="mb-4">
                                 <Link href={`/detail/${a._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                                     <Card>
-                                        <Card.Img variant="top" src={a.썸네일 || '/default.jpg'} />
+                                        <div className={styles.imageContainer}>
+                                            <Card.Img
+                                                variant="top"
+                                                src={a.썸네일 || '/default.jpg'}
+                                                className={styles.image}
+                                            />
+                                        </div>
                                         <Card.Body>
                                             <Card.Title>{a.제목}</Card.Title>
+                                            <Card.Text>👍 : {a.like || 0}</Card.Text>
                                             <Card.Text>
-                                                👍 : {a.like || 0}
+                                                작성자: {a.작성자 ? (
+                                                    <>
+                                                        {a.작성자.user.name}
+                                                        {a.작성자.user.image ? (
+                                                            <Image
+                                                                src={a.작성자.user.image}
+                                                                alt="작성자 아이콘 이미지"
+                                                                width={20}
+                                                                rounded
+                                                            />
+                                                        ) : null}
+                                                    </>
+                                                ) : (
+                                                    "익명"
+                                                )}
                                             </Card.Text>
                                         </Card.Body>
                                     </Card>

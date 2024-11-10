@@ -1,17 +1,30 @@
-'use client'
-import { Container, Nav, Navbar } from "react-bootstrap"
+// components/Navigation.js
+import Link from 'next/link';
+import LoginBtn from "../component/LoginBtn";
+import { getServerSession } from 'next-auth';
+import { authOptions } from "../pages/api/auth/[...nextauth]"
 
-export default function Navigation() {
+export default async function Navigation() {
+    const session = await getServerSession(authOptions);
     return (
-        <Navbar bg="dark" variant="dark">
-            <Container fluid>
-                <Navbar.Brand href="/">Navbar</Navbar.Brand>
-                <Nav className ="me-auto">
-                    <Nav.Link href="/">Home</Nav.Link>
-                    <Nav.Link href="/frige">frige</Nav.Link>
-                    <Nav.Link href="/roulette">roulette</Nav.Link>
-                 </Nav>
-            </Container>
-        </Navbar>
-    )
+        <nav className="navbar navbar-dark bg-dark">
+            <div className="container-fluid">
+                <Link href="/" className="navbar-brand">레시피 페이지</Link>
+                <ul className="navbar-nav d-flex flex-row me-auto">
+                    <li className="nav-item mx-2">
+                        <Link href="/" className="nav-link">Home</Link>
+                    </li>
+                    <li className="nav-item mx-2">
+                        <Link href="/frige" className="nav-link">Frige</Link>
+                    </li>
+                    <li className="nav-item mx-2">
+                        <Link href="/roulette" className="nav-link">Roulette</Link>
+                    </li>
+                    <li className="nav-item mx-2">
+                        <LoginBtn userInfo={session}></LoginBtn>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    );
 }
