@@ -48,6 +48,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         let updated썸네일;
         if (src.startsWith("blob:")) {
             updated썸네일 = await uploadThumbnailToS3(src);
+            alert(updated썸네일)
         } else {
             updated썸네일 = src;
         }
@@ -85,8 +86,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     };
 
     async function uploadImagesToS3(data) {
-        if (!data) throw new Error("uploadImagesToS3에서 넘어온 값 없음.");
-
         const parser = new DOMParser(); 
         const doc = parser.parseFromString(data, "text/html");
         const images = doc.querySelectorAll("img");
