@@ -135,15 +135,14 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     async function uploadThumbnailToS3(blobUrl) {
         const blob = await fetch(blobUrl).then(res => res.blob());
         const fileName = `${Date.now()}_thumbnail.png`;
-        alert("fileName: " + fileName);
 
         try {
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
                 method: "GET",
             });
-
+            console.log("프리사인드 URL 응답 상태:", presignedResponse.status);
             const presignedData = await presignedResponse.json();
-
+            console.log("프리사인드 데이터:", presignedData);
             if (!presignedResponse.ok || !presignedData.url) {
                 throw new Error("프리사인드 URL 생성 실패");
             }
