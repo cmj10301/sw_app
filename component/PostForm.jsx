@@ -44,8 +44,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         e.preventDefault();
 
         const updatedContent = await uploadImagesToS3(EditorContent);
-        alert(src);
-
         let updated썸네일;
         if (src.startsWith("blob:")) {
             updated썸네일 = await uploadThumbnailToS3(src);
@@ -106,7 +104,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                     const presignedData = await presignedResponse.json();
 
                     if (!presignedResponse.ok || !presignedData.url) {
-                        throw new Error("프리사인드 URL 생성 실패");
+                        alert("프리사인드 URL 생성 실패");
                     }
 
                     const formData = new FormData();
@@ -121,7 +119,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                     });
 
                     if (!uploadResponse.ok) {
-                        throw new Error("S3 업로드 실패");
+                        alert("S3 업로드 실패");
                     }
 
                     img.src = `${presignedData.url}/${presignedData.fields.key}`;
@@ -137,7 +135,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     async function uploadThumbnailToS3(blobUrl) {
         const blob = await fetch(blobUrl).then(res => res.blob());
         const fileName = `${Date.now()}_thumbnail.png`;
-        console.log("fileName",fileName)
+        alert("fileName",fileName)
 
         try {
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
