@@ -16,7 +16,6 @@ export default async function RecipeDetail({ params: { id } }) {
     const db = (await connectDB).db('forum');
     const result = await db.collection('post').findOne({ _id: new ObjectId(id) })
     const session = await getServerSession(authOptions);
-    console.log(session)
 
     // const deleteAll = await db.collection('post').deleteMany({});
 

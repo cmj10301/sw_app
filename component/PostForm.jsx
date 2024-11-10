@@ -139,16 +139,10 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
                 method: "GET",
             });
-            console.log("프리사인드 URL 응답 상태:", presignedResponse.status);
             const presignedData = await presignedResponse.json();
-            console.log("프리사인드 데이터:", presignedData);
             if (!presignedResponse.ok || !presignedData.url) {
                 throw new Error("프리사인드 URL 생성 실패");
             }
-
-            console.log('S3 버킷 이름 : ', process.env.BUCKET_NAME)
-            console.log('S3 액세스 키 : ', process.env.ACCESS_KEY)
-            console.log('S3 시크릿 키 : ', process.env.SECRET_KEY)
 
             const formData = new FormData();
             Object.entries(presignedData.fields).forEach(([key, value]) => {
