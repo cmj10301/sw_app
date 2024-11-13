@@ -213,7 +213,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                     </Form.Group>
                 ))}
                 <Button variant="secondary" className='mb-3' onClick={handleAddIngredient}>재료 추가</Button>
-                <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent} />
+                <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent}/>
                 <Form.Group className='my-3' as={Row} controlId='제출'>
                     {
                         id
