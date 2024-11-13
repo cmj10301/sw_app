@@ -25,7 +25,9 @@ export default async function handler(req, res) {
       await db.collection('post').deleteOne({ _id: new ObjectId(id) });
 
       // 이미지 URL에서 키 추출 및 삭제
-      const srcMatches = [...post.내용.matchAll(/src="([^"]+)"/g)];
+      const contentMatches = [...post.내용.matchAll(/src="([^"]+)"/g)];
+      const thumnailMatches = [...post.썸네일.matchAll(/src="([^"]+)"/g)];
+      const srcMatches = [...contentMatches, ...thumnailMatches];
       if (srcMatches.length > 0) {
         const imageKeys = srcMatches.map(match => {
           const fullUrl = match[1];
