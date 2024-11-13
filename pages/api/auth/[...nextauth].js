@@ -6,8 +6,8 @@ import { connectDB } from "../../../util/database.js"
 export const authOptions = {
   providers: [
     GithubProvider({
-      clientId: 'Ov23lif9alTq69O0CL2m',
-      clientSecret: 'a5dceff461e3b88b3725a73033f198d8e7036a63',
+      clientId: process.env.clientId, 
+      clientSecret: process.env.clientSecret,
     }),
   ],
   secret : '2ELNv7bYOS1ArYC',
