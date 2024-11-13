@@ -16,6 +16,7 @@ const CKEditor = dynamic(
 
 export default function TextEditor({onDataChange, EditorContent}) {
   const [editorData, setEditorData] = useState(EditorContent);
+  const maxImageCount = 50;
 
   useEffect(() => {
     setEditorData(EditorContent);
@@ -25,6 +26,8 @@ export default function TextEditor({onDataChange, EditorContent}) {
     const data = editor.getData();
     setEditorData(data);
     onDataChange(data);
+
+    
   };
 
   const editorConfig = {
