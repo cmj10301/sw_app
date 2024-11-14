@@ -8,6 +8,21 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
     const [EditorContent, setEditorContent] = useState(initialData.내용 || '');
     const [src, setSrc] = useState(initialData.썸네일 || '')
+    const maxImageSize = 5 * 1024 * 1024; // 5MB
+    const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+    
+    let newId = id;
+
+    async function fetchNewId() {
+        const response = await fetch('/api/create-id');
+        const data = await response.json();
+        if (response.ok) {
+            return data.id;
+        } else {
+            console.error('Failed to create new ID:', data);
+            return null;
+        }
+    }
 
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
@@ -30,11 +45,27 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     };
     //파일 선택 시 이미지 미리보기 및 크기 설정
     const handleImageChange = (e) => {
-        const file = e.target.files[0]
+        const file = e.target.files[0];
+
         if (!file) {
             console.error("파일이 선택되지 않았습니다")
             return;
         }
+
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+
+        if (!allowedExtensions.includes(fileExtension)) {
+            alert(`허용되지 않은 파일 형식입니다. (${allowedExtensions.join(', ')})만 업로드 가능합니다.`);
+            e.target.value = '';
+            return;
+        }
+
+        if (file.size > maxImageSize) {
+            alert(`파일 용량은 최대 ${Math.round(maxImageSize / (1024 * 1024))}MB까지 허용됩니다. 선택한 파일 용량은 ${Math.round(file.size / (1024 * 1024))}MB입니다.`);
+            e.target.value = '';
+            return;
+        }
+
         const previewUrl = URL.createObjectURL(file);
         setSrc(previewUrl)
     }
@@ -42,6 +73,15 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     // 폼 제출 핸들러
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!newId) {
+            newId = await fetchNewId();
+        }
+
+        if (!newId) {
+            alert("새로운 ID를 생성하는데 실패했습니다. 다시 시도해주세요.")
+            return;
+        }
 
         const updatedContent = await uploadImagesToS3(EditorContent);
         let updated썸네일;
@@ -52,7 +92,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         }
 
         const formData = {
-            _id: id,
+            _id: newId,
             작성자: password ? '' : userInfo,
             제목: e.target.제목.value,
             비밀번호: userInfo ? '' : e.target.비밀번호.value,
@@ -88,12 +128,14 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         const doc = parser.parseFromString(data, "text/html");
         const images = doc.querySelectorAll("img");
 
-        for (let img of images) {
+        for (let [index, img] of images.entries()) {
             const base64Data = img.src;
 
             if (base64Data.startsWith("data:image") || base64Data.startsWith("blob:")) {
                 const blob = await fetch(base64Data).then((res) => res.blob());
-                const fileName = `${Date.now()}_image.png`;
+                
+                const fileName =  `${newId}_image_${index}.png`;
+                console.log(fileName);
 
                 try {
                     const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
@@ -133,7 +175,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
 
     async function uploadThumbnailToS3(blobUrl) {
         const blob = await fetch(blobUrl).then(res => res.blob());
-        const fileName = `${Date.now()}_thumbnail.png`;
+        const fileName =  `${newId}_Thumbnail.png`;
 
         try {
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
@@ -171,7 +213,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             <Form onSubmit={handleSubmit}>
                 <Form.Control className='my-3' type="text" name="제목" placeholder="글 제목을 입력하세요." defaultValue={initialData.제목} required />
                 <Form.Group>
-                    <Form.Label>썸네일 이미지  등록</Form.Label>
+                    <Form.Label>썸네일 이미지 파일은 최대 {Math.round(maxImageSize / (1024 * 1024))}MB, 확장자는 [{allowedExtensions.join(', ')}] 만 업로드 가능합니다.</Form.Label>
                     <Form.Control type="file" name="썸네일" onChange={(e) => handleImageChange(e)} />
                     <div style={{ width: "100%", maxWidth: "200px" }}>
                         {src && (

@@ -32,7 +32,7 @@ export default function Modals({ id, password = null, value }) {
           handleClose();
           window.location.href = '/';
         } else {
-          alert("비밀번호가 틀렸습니다.");
+          alert("삭제 중 오류가 발생했습니다.");
         }
       }
     } else if (password == null) {
@@ -48,7 +48,7 @@ export default function Modals({ id, password = null, value }) {
           handleClose();
           window.location.href = '/';
         } else {
-          alert("비밀번호가 틀렸습니다.");
+          alert("삭제 중 오류가 발생했습니다.");
         }
       }
     } else {

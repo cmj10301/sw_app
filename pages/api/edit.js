@@ -9,8 +9,8 @@ export default async function handler(request, response) {
         }
 
         const 바꿀꺼 = {제목, 비밀번호, 내용, 재료들 : 재료들 || [], 썸네일}
-        
         const db = (await connectDB).db('forum');
+
         let result = await db.collection('post').updateOne({_id : new ObjectId(request.body._id)}, {$set : 바꿀꺼})
         response.status(200).json({ message: '데이터가 성공적으로 저장되었습니다.'});
     }

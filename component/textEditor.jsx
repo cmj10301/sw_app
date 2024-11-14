@@ -17,7 +17,7 @@ const CKEditor = dynamic(
 export default function TextEditor({ onDataChange, EditorContent }) {
   const [editorData, setEditorData] = useState(EditorContent);
   const maxImageCount = 20;
-  const maxImageSize = 5242880;
+  const maxImageSize = 5 * 1024 * 1024;
 
   useEffect(() => {
     setEditorData(EditorContent);

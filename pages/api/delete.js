@@ -19,21 +19,28 @@ export default async function handler(req, res) {
     const db = client.db('forum');
 
     const post = await db.collection('post').findOne({ _id: new ObjectId(id) });
-    
     if (post && (post.비밀번호 === password || password == null)) {
       // 게시글 삭제
       await db.collection('post').deleteOne({ _id: new ObjectId(id) });
 
       // 이미지 URL에서 키 추출 및 삭제
-      const contentMatches = [...post.내용.matchAll(/src="([^"]+)"/g)];
-      const thumnailMatches = [...post.썸네일.matchAll(/src="([^"]+)"/g)];
-      const srcMatches = [...contentMatches, ...thumnailMatches];
+      const srcMatches = [...post.내용.matchAll(/src="([^"]+)"/g)];
+      const thumnailMatches = post.썸네일 ? post.썸네일 : "";
+      let thumnailKey = '';
+
+      if (thumnailMatches) {
+        thumnailKey = thumnailMatches.split('.com/')[1].replace('swimagebucket/', '');
+      }
       if (srcMatches.length > 0) {
         const imageKeys = srcMatches.map(match => {
           const fullUrl = match[1];
           const key =  fullUrl.split('.com/')[1];
           return key.replace('swimagebucket/', '')
         });
+
+        if (thumnailKey) {
+          imageKeys.push(thumnailKey);
+        }
 
         try {
           const deletePromises = imageKeys.map(key => {
