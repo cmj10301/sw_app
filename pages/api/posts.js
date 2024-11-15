@@ -3,7 +3,7 @@ import { connect } from '../../util/database';
 import Post from '../../models/Post';
 
 export default async function handler(req, res) {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 6 } = req.query;
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
     const skip = (pageNumber - 1) * limitNumber;

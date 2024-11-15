@@ -20,7 +20,7 @@ export default function Home() {
             try {
                 const response = await fetch(`/api/posts?page=${currentPage}&limit=${limit}`);
                 if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`); // 응답 상태 확인
+                    throw new Error(`Error: ${response.status}`); 
                 }
 
                 const result = await response.json();
@@ -30,7 +30,7 @@ export default function Home() {
             } catch (error) {
                 console.error("데이터 가져오기 오류:", error);
             } finally {
-                setloading(false); // 로딩 종료
+                setloading(false); 
             }
         }
         fetchPosts();

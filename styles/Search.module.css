@@ -13,15 +13,10 @@
     border: 1px solid #ddd;
     border-radius: 24px; /* 둥근 모서리 */
     padding: 3px 10px; /* 패딩을 줄여서 슬림하게 */
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
     background-color: #fff; /* 흰색 배경 */
     transition: box-shadow 0.2s ease-in-out;
     max-width: 500px; /* 검색창 너비 제한 */
     width: 100%;
-}
-
-.searchForm:focus-within {
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* 포커스 시 강조된 그림자 */
 }
 
 .searchInput {
@@ -48,8 +43,4 @@
     align-items: center;
     padding: 0 6px; /* 아이콘의 좌우 패딩 줄임 */
     margin-left: -4px; /* 아이콘과 입력란 간격 최소화 */
-}
-
-.searchBtn:hover {
-    color: #333;
 }
