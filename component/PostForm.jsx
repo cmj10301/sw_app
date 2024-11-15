@@ -10,7 +10,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     const [src, setSrc] = useState(initialData.썸네일 || '')
     const maxImageSize = 5 * 1024 * 1024; // 5MB
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-    
+
     let newId = id;
 
     async function fetchNewId() {
@@ -66,8 +66,11 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             return;
         }
 
+
         const previewUrl = URL.createObjectURL(file);
         setSrc(previewUrl)
+
+
     }
 
     // 폼 제출 핸들러
@@ -94,16 +97,17 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         const formData = {
             _id: newId,
             작성자: password ? '' : userInfo,
-            제목: e.target.제목.value,
             비밀번호: userInfo ? '' : e.target.비밀번호.value,
+            제목: e.target.제목.value,
+            요리이름: e.target.요리이름.value,
             썸네일: updated썸네일,
-            내용: updatedContent,
             재료들: ingredients
                 .filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '')
                 .map(ingredient => ({
                     재료: ingredient.재료,
                     갯수: ingredient.갯수,
                 })),
+            내용: updatedContent,
         };
 
         const apiEndpoint = id ? '/api/edit' : '/api/new';
@@ -133,9 +137,8 @@ export default function PostForm({ initialData = '', id = null, author = null, p
 
             if (base64Data.startsWith("data:image") || base64Data.startsWith("blob:")) {
                 const blob = await fetch(base64Data).then((res) => res.blob());
-                
-                const fileName =  `${newId}_image_${index}.png`;
-                console.log(fileName);
+
+                const fileName = `${newId}_image_${index}.png`;
 
                 try {
                     const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
@@ -175,7 +178,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
 
     async function uploadThumbnailToS3(blobUrl) {
         const blob = await fetch(blobUrl).then(res => res.blob());
-        const fileName =  `${newId}_Thumbnail.png`;
+        const fileName = `${newId}_Thumbnail.png`;
 
         try {
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
@@ -212,6 +215,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         <>
             <Form onSubmit={handleSubmit}>
                 <Form.Control className='my-3' type="text" name="제목" placeholder="글 제목을 입력하세요." defaultValue={initialData.제목} required />
+                <Form.Control className='my-3' type="text" name="요리이름" placeholder="요리 이름을 입력하세요." defaultValue={initialData.요리이름} required />
                 <Form.Group>
                     <Form.Label>썸네일 이미지 파일은 최대 {Math.round(maxImageSize / (1024 * 1024))}MB, 확장자는 [{allowedExtensions.join(', ')}] 만 업로드 가능합니다.</Form.Label>
                     <Form.Control type="file" name="썸네일" onChange={(e) => handleImageChange(e)} />
@@ -224,7 +228,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                             />
                         )}
                     </div>
-
                 </Form.Group>
 
                 {ingredients.map((ingredient, index) => (
@@ -255,7 +258,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                     </Form.Group>
                 ))}
                 <Button variant="secondary" className='mb-3' onClick={handleAddIngredient}>재료 추가</Button>
-                <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent}/>
+                <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent} />
                 <Form.Group className='my-3' as={Row} controlId='제출'>
                     {
                         id

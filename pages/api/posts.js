@@ -1,22 +1,25 @@
-import { connectDB } from "../../util/database.js";
+// API 핸들러
+import { connect } from '../../util/database';
+import Post from '../../models/Post';
+
 export default async function handler(req, res) {
-    const { page = 1, limit = 10 } = req.query; // 기본 페이지와 한 페이지의 항목 수 설정
+    const { page = 1, limit = 10 } = req.query;
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
     const skip = (pageNumber - 1) * limitNumber;
 
     try {
-        const db = (await connectDB).db('forum');
-        const collection = db.collection('post');
+        await connect();
 
-        const totalDocuments = await collection.countDocuments(); // 전체 문서 수 계산
+        const totalDocuments = await Post.countDocuments();
+
         const totalPages = Math.ceil(totalDocuments / limitNumber);
 
-        const data = await collection.find({}, {projection : {_id : 1, 제목: 1, like : 1, 썸네일 : 1, 작성자 : 1} })
-            .sort({ _id: -1 }) // 최신 글 순으로 정렬
+        const data = await Post.find({}, { _id: 1, 제목: 1, like: 1, 썸네일: 1, 작성자: 1 })
+            .sort({ _id: -1 })
             .skip(skip)
-            .limit(limitNumber)
-            .toArray();
+            .limit(limitNumber);
+
         res.status(200).json({ data, totalPages, currentPage: pageNumber });
     } catch (error) {
         res.status(500).json({ error: "데이터를 가져오는 중 오류가 발생했습니다." });

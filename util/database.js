@@ -1,13 +1,24 @@
-import { MongoClient } from 'mongodb'
-const url = 'mongodb+srv://cmj10301:kRdBu9Pd3xp9CAqL@cluster0.drwdp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
-let connectDB
+// database.js (mongoose 연결용)
+const mongoose = require('mongoose');
+const url = 'mongodb+srv://cmj10301:kRdBu9Pd3xp9CAqL@cluster0.drwdp.mongodb.net/forum?retryWrites=true&w=majority&appName=Cluster0';
 
-if (process.env.NODE_ENV === 'development') {
-  if (!global._mongo) {
-    global._mongo = new MongoClient(url).connect()
-  }
-  connectDB = global._mongo
-} else {
-  connectDB = new MongoClient(url).connect()
+let isConnected = false;
+
+async function connect() {
+    if (isConnected) {
+        console.log('이미 MongoDB에 연결되어 있습니다.');
+        return mongoose;
+    }
+
+    try {
+        await mongoose.connect(url);
+        isConnected = true;
+        console.log('MongoDB에 연결되었습니다.');
+    } catch (err) {
+        console.error('MongoDB 연결 실패:', err);
+        throw new Error('MongoDB 연결 실패');
+    }
+    return mongoose;
 }
-export { connectDB}
+
+module.exports = { connect };

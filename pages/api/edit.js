@@ -1,5 +1,6 @@
-import { ObjectId } from "mongodb";
-import { connectDB } from "../../util/database"
+import { connect } from "../../util/database.js";
+import Post from "../../models/Post.js";
+
 
 export default async function handler(request, response) {
     if (request.method == 'POST') {
@@ -9,9 +10,21 @@ export default async function handler(request, response) {
         }
 
         const 바꿀꺼 = {제목, 비밀번호, 내용, 재료들 : 재료들 || [], 썸네일}
-        const db = (await connectDB).db('forum');
+        await connect();
 
-        let result = await db.collection('post').updateOne({_id : new ObjectId(request.body._id)}, {$set : 바꿀꺼})
-        response.status(200).json({ message: '데이터가 성공적으로 저장되었습니다.'});
+        try {
+            let result = await Post.findByIdAndUpdate(
+                request.body._id,
+                { $set: 바꿀꺼 },
+                { new: true, useFindAndModify: false }
+            );
+
+            response.status(200).json({ message: '데이터가 성공적으로 저장되었습니다.', result });
+        } catch (error) {
+            console.error("데이터 업데이트 오류:", error);
+            response.status(500).json({ error: "데이터 업데이트 중 오류가 발생했습니다." });
+        }
+    } else {
+        response.status(405).json({ error : "허용되지 않는 메서드입니다."});
     }
 }

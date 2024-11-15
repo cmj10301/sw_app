@@ -1,7 +1,11 @@
-import { connectDB } from "../../util/database.js";
-import { ObjectId } from "mongodb";
+import Post from "../../models/Post.js";
+import { connect } from "../../util/database.js";
 
-export default async function like(id, like) {
-    let db = (await connectDB).db('forum');
-    await db.collection('post').updateOne({_id : new ObjectId(id)}, {$set : {like : like + 1}})
+export default async function like(id, likeCount) {
+    await connect();
+
+    await Post.updateOne(
+        { _id : id},
+        { $set : {like : likeCount + 1} }
+    )
 }

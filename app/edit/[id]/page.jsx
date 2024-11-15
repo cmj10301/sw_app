@@ -1,14 +1,26 @@
 import PostForm from "../../../component/PostForm"
-import { connectDB } from "../../../util/database.js";
-import { ObjectId } from "mongodb";
+import { connect } from "../../../util/database.js";
+import Post from "../../../models/Post";
 
-export default async function Edit({params : {id}}) {
-    let db = (await connectDB).db('forum');
-    let result = await db.collection('post').findOne({_id : new ObjectId({id})})
-    const initialData = {
-        ...result,
-        _id : result._id.toString(),
+export default async function Edit({ params: { id } }) {
+    await connect();
+
+    let result = await Post.findById(id).lean()
+    if (!result) {
+        return <div>게시물을 찾을 수 없습니다.</div>;
     }
 
-    return <PostForm initialData = {initialData} id={id} password={result.비밀번호} author = {result.작성자 ? result.작성자.user.email : null}></PostForm>
-}
+    const initialData = {
+        ...result,
+        _id: result._id.toString(),
+    }
+
+    return (
+        <PostForm
+            initialData={initialData}
+            id={id}
+            password={result.비밀번호}
+            author={result.작성자 ? result.작성자.user.email : null}>
+        </PostForm>
+    )
+} 

@@ -16,11 +16,22 @@ export default function Home() {
 
     useEffect(() => {
         async function fetchPosts() {
-            const response = await fetch(`/api/posts?page=${currentPage}&limit=${limit}`);
-            const result = await response.json();
-            setPosts(result.data);
-            setTotalPages(result.totalPages);
-            setloading(false);
+            setloading(true); // 로딩 시작
+            try {
+                const response = await fetch(`/api/posts?page=${currentPage}&limit=${limit}`);
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status}`); // 응답 상태 확인
+                }
+
+                const result = await response.json();
+
+                setPosts(result.data);
+                setTotalPages(result.totalPages);
+            } catch (error) {
+                console.error("데이터 가져오기 오류:", error);
+            } finally {
+                setloading(false); // 로딩 종료
+            }
         }
         fetchPosts();
     }, [currentPage]);

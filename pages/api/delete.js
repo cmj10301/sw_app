@@ -1,6 +1,7 @@
 // pages/api/delete.js
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import * as database from '../../util/database';
+import { connect } from "../../util/database.js";
+import Post from "../../models/Post.js";
 import { ObjectId } from 'mongodb';
 
 export default async function handler(req, res) {
@@ -13,15 +14,13 @@ export default async function handler(req, res) {
   }) 
   if (req.method === 'DELETE') {
     const { id, password } = JSON.parse(req.body);
+    
+    await connect(); // 명시적 연결
 
-    const client = await database.connectDB;
-    await client.connect(); // 명시적 연결
-    const db = client.db('forum');
-
-    const post = await db.collection('post').findOne({ _id: new ObjectId(id) });
+    const post = await Post.findById(id);
     if (post && (post.비밀번호 === password || password == null)) {
       // 게시글 삭제
-      await db.collection('post').deleteOne({ _id: new ObjectId(id) });
+      await Post.deleteOne({_id : new ObjectId(id)});
 
       // 이미지 URL에서 키 추출 및 삭제
       const srcMatches = [...post.내용.matchAll(/src="([^"]+)"/g)];
