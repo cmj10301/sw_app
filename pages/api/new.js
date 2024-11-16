@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 import Post from "../../models/Post";
 import { connect } from "../../util/database";
+import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
     if (req.method === "POST") {
-        const { 작성자, 비밀번호, 제목, 요리이름, 썸네일, 재료들, 내용, like } = req.body;
+        const { _id, 작성자, 비밀번호, 제목, 요리이름, 썸네일, 재료들, 내용, like } = req.body;
 
         await connect();
 
@@ -15,7 +16,8 @@ export default async function handler(req, res) {
 
         try {
             const newPost = new Post({
-                작성자: 작성자id, // 작성자가 없으면 null로 저장
+                _id : new ObjectId(_id),
+                작성자: 작성자id,
                 비밀번호,
                 제목,
                 요리이름,

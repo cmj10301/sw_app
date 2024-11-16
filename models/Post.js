@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 // 게시글 스키마 정의
 const postSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   작성자: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   비밀번호: { type: String, default: null },
   제목: { type: String, required: true },
