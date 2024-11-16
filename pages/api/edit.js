@@ -4,12 +4,12 @@ import Post from "../../models/Post.js";
 
 export default async function handler(request, response) {
     if (request.method == 'POST') {
-        const {제목, 비밀번호, 내용, 재료들, 썸네일} = request.body;
-        if (!제목 || !비밀번호 || !내용 || !재료들) {
+        const {제목, 요리이름, 비밀번호, 내용, 재료들, 썸네일} = request.body;
+        if (!제목 || !요리이름 || !내용 || !재료들) {
             return response.status(400).json({error : '필수 항목이 누락됐습니다.'})
         }
 
-        const 바꿀꺼 = {제목, 비밀번호, 내용, 재료들 : 재료들 || [], 썸네일}
+        const 바꿀꺼 = {제목, 요리이름, 비밀번호, 내용, 재료들 : 재료들 || [], 썸네일}
         await connect();
 
         try {

@@ -7,7 +7,8 @@ import styles from "../../styles/ImageCard.module.css"
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
-    const query = searchParams.get("query");
+    const query = searchParams.get("keyword") || "";
+    const scope = searchParams.get("scope") || "all";
     const [posts, setPosts] = useState([]);
     const [loading, setloading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,7 +17,7 @@ export default function SearchPage() {
 
     const fetchSearchResults = (page) => {
         setloading(true);
-        fetch(`/api/search?keyword=${encodeURIComponent(query)}&page=${page}&limit=${limit}`)
+        fetch(`/api/search?keyword=${encodeURIComponent(query)}&scope=${scope}&page=${page}&limit=${limit}`)
             .then((res) => res.json())
             .then(({ data, totalPages }) => {
                 setPosts(data);
@@ -31,7 +32,7 @@ export default function SearchPage() {
 
     useEffect(() => {
         fetchSearchResults(currentPage);
-    }, [query, currentPage]);
+    }, [query, scope, currentPage]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -65,10 +66,10 @@ export default function SearchPage() {
                                                 <Card.Text>
                                                     작성자: {a.작성자 ? (
                                                         <>
-                                                            {a.작성자.user.name}
-                                                            {a.작성자.user.image ? (
+                                                            {a.작성자.name}
+                                                            {a.작성자.image ? (
                                                                 <Image
-                                                                    src={a.작성자.user.image}
+                                                                    src={a.작성자.image}
                                                                     alt="작성자 아이콘 이미지"
                                                                     width={20}
                                                                     rounded

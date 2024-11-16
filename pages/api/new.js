@@ -1,19 +1,37 @@
-import { connect } from '../../util/database'; // Mongoose 연결 초기화
-import Post from '../../models/Post';
+import mongoose from "mongoose";
+import Post from "../../models/Post";
+import { connect } from "../../util/database";
 
-export default async function handler(request, response) {
-    if (request.method === 'POST') {
+export default async function handler(req, res) {
+    if (req.method === "POST") {
+        const { 작성자, 비밀번호, 제목, 요리이름, 썸네일, 재료들, 내용, like } = req.body;
+
         await connect();
-        const newPost = new Post(request.body);
+
+        // 작성자가 없거나 유효하지 않을 경우 null로 설정
+        const 작성자id = 작성자 && mongoose.Types.ObjectId.isValid(작성자)
+            ? new mongoose.Types.ObjectId(작성자)
+            : null;
 
         try {
-            // 데이터 저장
+            const newPost = new Post({
+                작성자: 작성자id, // 작성자가 없으면 null로 저장
+                비밀번호,
+                제목,
+                요리이름,
+                썸네일,
+                재료들,
+                내용,
+                like
+            });
             await newPost.save();
-            response.status(200).json({ message: '데이터가 성공적으로 저장되었습니다.' });
+
+            res.status(200).json({ message: "데이터가 성공적으로 저장되었습니다." });
         } catch (error) {
-            response.status(500).json({ message: '데이터 저장에 실패했습니다.', error });
+            console.error("저장 중 오류:", error);
+            res.status(500).json({ message: "데이터 저장에 실패했습니다.", error });
         }
     } else {
-        response.status(405).json({ message: '허용되지 않은 요청 방식입니다.' });
+        res.status(405).json({ message: "허용되지 않은 요청 방식입니다." });
     }
 }

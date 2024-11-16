@@ -6,6 +6,7 @@ export default async function like(id, likeCount) {
 
     await Post.updateOne(
         { _id : id},
-        { $set : {like : likeCount + 1} }
-    )
+        { $set : {like : likeCount + 1} },
+        { timestamps : false}
+    );
 }

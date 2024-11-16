@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, Col, Image, Pagination, Row, Spinner } from "react-bootstrap";
 import styles from "../../styles/ImageCard.module.css"
 
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 
 export default function Home() {
     const [posts, setPosts] = useState([]);
@@ -22,10 +22,10 @@ export default function Home() {
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status}`); 
                 }
-
                 const result = await response.json();
 
-                setPosts(result.data);
+                setPosts(result.data || []);
+                
                 setTotalPages(result.totalPages);
             } catch (error) {
                 console.error("데이터 가져오기 오류:", error);
@@ -66,10 +66,10 @@ export default function Home() {
                                             <Card.Text>
                                                 작성자: {a.작성자 ? (
                                                     <>
-                                                        {a.작성자.user.name}
-                                                        {a.작성자.user.image ? (
+                                                        {a.작성자.name}
+                                                        {a.작성자.image ? (
                                                             <Image
-                                                                src={a.작성자.user.image}
+                                                                src={a.작성자.image}
                                                                 alt="작성자 아이콘 이미지"
                                                                 width={20}
                                                                 rounded

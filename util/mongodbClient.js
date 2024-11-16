@@ -1,16 +1,21 @@
-// mongodbClient.js (NextAuth MongoDBAdapter용)
+// mongodbClient.js
 const { MongoClient } = require('mongodb');
-const url = 'mongodb+srv://cmj10301:kRdBu9Pd3xp9CAqL@cluster0.drwdp.mongodb.net/forum?retryWrites=true&w=majority&appName=Cluster0';
+const url = process.env.MONGODB_URI;
 
 let client;
 let clientPromise;
 
 if (!global._mongoClientPromise) {
-    client = new MongoClient(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-    global._mongoClientPromise = client.connect();
+    try {
+        client = new MongoClient(url, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        global._mongoClientPromise = client.connect();
+    } catch (error) {
+        console.error("MongoDB connection error:", error);
+        throw error;
+    }
 }
 clientPromise = global._mongoClientPromise;
 

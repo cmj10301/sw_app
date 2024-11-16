@@ -5,10 +5,9 @@ import Post from "../../../models/Post";
 export default async function Edit({ params: { id } }) {
     await connect();
 
-    let result = await Post.findById(id).lean()
-    if (!result) {
-        return <div>게시물을 찾을 수 없습니다.</div>;
-    }
+    let result = await Post.findById(id)
+        .populate('작성자', 'email')
+        .lean();
 
     const initialData = {
         ...result,
@@ -19,8 +18,8 @@ export default async function Edit({ params: { id } }) {
         <PostForm
             initialData={initialData}
             id={id}
-            password={result.비밀번호}
-            author={result.작성자 ? result.작성자.user.email : null}>
+            password={initialData.비밀번호}
+            author={initialData.작성자 ? initialData.작성자: null}>
         </PostForm>
     )
 } 

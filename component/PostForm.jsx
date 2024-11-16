@@ -4,7 +4,7 @@ import { useState } from 'react';
 import TextEditor from '../component/textEditor';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
-export default function PostForm({ initialData = '', id = null, author = null, password = null, userInfo }) {
+export default function PostForm({ initialData = '', id = null, author = null, password = null, userInfo}) {
     const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
     const [EditorContent, setEditorContent] = useState(initialData.내용 || '');
     const [src, setSrc] = useState(initialData.썸네일 || '')
@@ -96,8 +96,8 @@ export default function PostForm({ initialData = '', id = null, author = null, p
 
         const formData = {
             _id: newId,
-            작성자: password ? '' : userInfo,
-            비밀번호: userInfo ? '' : e.target.비밀번호.value,
+            작성자: password ? '' : (userInfo?.id || null),
+            비밀번호: userInfo ? '' : (e.target.비밀번호?.value || null),
             제목: e.target.제목.value,
             요리이름: e.target.요리이름.value,
             썸네일: updated썸네일,
