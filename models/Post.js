@@ -6,7 +6,6 @@ const postSchema = new mongoose.Schema({
   작성자: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   비밀번호: { type: String, default: null },
   제목: { type: String, required: true },
-  요리이름: { type: String, required: true},
   썸네일: { type: String },
   재료들: [{
     재료: { type: String, required: true },

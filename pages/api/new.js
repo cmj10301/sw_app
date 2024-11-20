@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
     if (req.method === "POST") {
-        const { _id, 작성자, 비밀번호, 제목, 요리이름, 썸네일, 재료들, 내용, like } = req.body;
+        const { _id, 작성자, 비밀번호, 제목, 썸네일, 재료들, 내용, like } = req.body;
 
         await connect();
 
@@ -20,7 +20,6 @@ export default async function handler(req, res) {
                 작성자: 작성자id,
                 비밀번호,
                 제목,
-                요리이름,
                 썸네일,
                 재료들,
                 내용,

@@ -35,7 +35,6 @@ export default async function RecipeDetail({ params: { id } }) {
     return (
         <div>
             <h1>{result.제목}</h1>
-            <h1>{result.요리이름}</h1>
             <hr />
             <h1>미리보기 이미지</h1>
             {result.썸네일 && (

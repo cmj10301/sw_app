@@ -99,7 +99,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             작성자: password ? '' : (userInfo?.id || null),
             비밀번호: userInfo ? '' : (e.target.비밀번호?.value || null),
             제목: e.target.제목.value,
-            요리이름: e.target.요리이름.value,
             썸네일: updated썸네일,
             재료들: ingredients
                 .filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '')
@@ -215,7 +214,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
         <>
             <Form onSubmit={handleSubmit}>
                 <Form.Control className='my-3' type="text" name="제목" placeholder="글 제목을 입력하세요." defaultValue={initialData.제목} required />
-                <Form.Control className='my-3' type="text" name="요리이름" placeholder="요리 이름을 입력하세요." defaultValue={initialData.요리이름} required />
                 <Form.Group>
                     <Form.Label>썸네일 이미지 파일은 최대 {Math.round(maxImageSize / (1024 * 1024))}MB, 확장자는 [{allowedExtensions.join(', ')}] 만 업로드 가능합니다.</Form.Label>
                     <Form.Control type="file" name="썸네일" onChange={(e) => handleImageChange(e)} />
