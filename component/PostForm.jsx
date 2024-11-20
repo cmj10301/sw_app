@@ -4,15 +4,20 @@ import { useState } from 'react';
 import TextEditor from '../component/textEditor';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 
-export default function PostForm({ initialData = '', id = null, author = null, password = null, userInfo}) {
-    const [ingredients, setIngredients] = useState(initialData.재료들 || [{ 재료: '', 갯수: '' }]);
+export default function PostForm({ initialData = '', id = null, author = null, password = null, userInfo }) {
+    const [ingredients, setIngredients] = useState(
+        initialData.재료들 || [{ 재료: '', 갯수: '', 단위: '', isMain: false }]
+    );
     const [EditorContent, setEditorContent] = useState(initialData.내용 || '');
     const [src, setSrc] = useState(initialData.썸네일 || '')
     const maxImageSize = 5 * 1024 * 1024; // 5MB
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+    const 단위목록 = ['직접 입력', '단', '포기'];
+    const [readOnlyCheck, setReadOnlyCheck] = useState(false);
+    const [gramCheck, setgramCheck] = useState(false);
 
+    //ID 미리 생성
     let newId = id;
-
     async function fetchNewId() {
         const response = await fetch('/api/create-id');
         const data = await response.json();
@@ -27,7 +32,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     // 재료 추가 핸들러
     const handleAddIngredient = (e) => {
         e.preventDefault();
-        setIngredients((prev) => [...prev, { 재료: '', 갯수: '' }]);
+        setIngredients((prev) => [...prev, { 재료: '', 갯수: '', 단위: '' }]);
     };
 
     //재료 삭제 핸들러
@@ -43,6 +48,17 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             )
         );
     };
+
+    // 주요 재료 설정
+    const handleToggleMainIngredient = (index) => {
+        setIngredients((prev) =>
+            prev.map((ingredient, i) =>
+                i === index ? { ...ingredient, isMain: !ingredient.isMain } : ingredient
+            )
+        );
+    };
+
+
     //파일 선택 시 이미지 미리보기 및 크기 설정
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -100,14 +116,14 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             비밀번호: userInfo ? '' : (e.target.비밀번호?.value || null),
             제목: e.target.제목.value,
             썸네일: updated썸네일,
-            재료들: ingredients
-                .filter(ingredient => (ingredient.재료 || '').trim() !== '' && (ingredient.갯수 || '').trim() !== '')
-                .map(ingredient => ({
-                    재료: ingredient.재료,
-                    갯수: ingredient.갯수,
-                })),
+            재료들: ingredients.filter(
+                (ingredient) =>
+                    (ingredient.재료 || '').trim() !== '' &&
+                    (ingredient.갯수 || '').trim() !== ''
+            ),
             내용: updatedContent,
         };
+
 
         const apiEndpoint = id ? '/api/edit' : '/api/new';
         const response = await fetch(apiEndpoint, {
@@ -178,7 +194,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     async function uploadThumbnailToS3(blobUrl) {
         const blob = await fetch(blobUrl).then(res => res.blob());
         const fileName = `${newId}_Thumbnail.png`;
-        
+
         try {
             const presignedResponse = await fetch(`/api/image?file=${encodeURIComponent(fileName)}`, {
                 method: "GET",
@@ -229,32 +245,91 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                 </Form.Group>
 
                 {ingredients.map((ingredient, index) => (
-                    <Form.Group as={Row} className='my-3' key={index}>
-                        <Col>
+                    <Form.Group as={Row} className="my-2 align-items-center" key={index}>
+                        <Col xs="auto">
+                            {/* 재료 이름 */}
                             <Form.Control
                                 type="text"
                                 id={`ingredient_name_${index}`}
                                 name={`ingredient_name_${index}`}
-                                placeholder="재료 이름을 입력하세요."
+                                placeholder="재료 이름"
                                 defaultValue={ingredient.재료}
                                 onChange={(e) => handleIngredientChange(index, '재료', e.target.value)}
-                                required />
+                                required
+                            />
                         </Col>
-                        <Col>
+
+                        <Col xs="auto">
+                            {/* 재료 양 */}
                             <Form.Control
                                 type="text"
                                 id={`ingredient_amount_${index}`}
                                 name={`ingredient_amount_${index}`}
-                                placeholder="재료 양을 입력하세요."
+                                placeholder="재료 양"
                                 defaultValue={ingredient.갯수}
                                 onChange={(e) => handleIngredientChange(index, '갯수', e.target.value)}
-                                required />
+                                required
+                            />
                         </Col>
-                        <Col>
-                            <Button variant="secondary" onClick={() => handleDeleteIngredient(index)}>삭제</Button>
+
+                        <Col xs="auto" className="d-flex align-items-center">
+                            {/* 드롭다운 */}
+                            <Form.Select
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    handleIngredientChange(index, '단위', value === '직접 입력' ? '' : value);
+                                    setReadOnlyCheck(value !== '직접 입력')
+                                }}
+                            >
+                                {단위목록.map((unit, idx) => (
+                                    <option key={idx} value={unit}>
+                                        {unit}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Col>
+
+                        <Col xs="auto">
+                            <Form.Check
+                                type='checkbox'
+                                id={`wanna_gram_ingredient_${index}`}
+                                label="그램으로도 표기 "
+                                onChange={() => { setgramCheck(!gramCheck) }}
+                            />
+                        </Col>
+
+                        <Col xs="auto">
+                            {
+                                gramCheck ? (
+                                    <input
+                                        type='number'
+                                        placeholder='그램 입력'
+
+                                    />
+                                ) : ''
+                            }
+                        </Col>
+
+                        <Col xs="auto">
+                            {/* 주요 재료 체크박스 */}
+                            <Form.Check
+                                type="checkbox"
+                                id={`main_ingredient_${index}`}
+                                label="주요 재료"
+                                checked={ingredient.isMain}
+                                onChange={() => handleToggleMainIngredient(index)}
+                            />
+                        </Col>
+
+                        <Col xs="auto">
+                            {/* 삭제 버튼 */}
+                            <Button variant="danger" onClick={() => handleDeleteIngredient(index)}>
+                                삭제
+                            </Button>
                         </Col>
                     </Form.Group>
                 ))}
+
                 <Button variant="secondary" className='mb-3' onClick={handleAddIngredient}>재료 추가</Button>
                 <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent} />
                 <Form.Group className='my-3' as={Row} controlId='제출'>

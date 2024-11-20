@@ -15,7 +15,6 @@ const DOMPurify = createDOMPurify(window);
 export default async function RecipeDetail({ params: { id } }) {
     await connect();
 
-    // `작성자` 필드를 populate하여 닉네임 가져오기
     const result = await Post.findById(id).populate("작성자", "name").lean() || {};
     const session = await getServerSession(authOptions) || {};
 
@@ -44,8 +43,13 @@ export default async function RecipeDetail({ params: { id } }) {
             <h2>필요 재료</h2>
             <Container>
                 {(result.재료들 || []).map((i, a) => (
-                    <Row key={a}>
-                        <Col xs={4}>{i.재료}</Col>
+                    <Row key={a} className="align-items-center">
+                        <Col xs={4}>
+                            {i.재료}
+                            {i.isMain && (
+                                <span style={{ color: 'red', marginLeft: '8px' }}>*</span>
+                            )}
+                        </Col>
                         <Col xs={2}>{i.갯수}</Col>
                     </Row>
                 ))}
