@@ -13,8 +13,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     const maxImageSize = 5 * 1024 * 1024; // 5MB
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
     const 단위목록 = ['직접 입력', '단', '포기'];
-    const [readOnlyCheck, setReadOnlyCheck] = useState(false);
-    const [gramCheck, setgramCheck] = useState(false);
 
     //ID 미리 생성
     let newId = id;
@@ -116,7 +114,10 @@ export default function PostForm({ initialData = '', id = null, author = null, p
             비밀번호: userInfo ? '' : (e.target.비밀번호?.value || null),
             제목: e.target.제목.value,
             썸네일: updated썸네일,
-            재료들: ingredients.filter(
+            재료들: ingredients.map((ingredient) => ({
+                ...ingredient,
+                그램: ingredient.그램 || null,
+            })).filter(
                 (ingredient) =>
                     (ingredient.재료 || '').trim() !== '' &&
                     (ingredient.갯수 || '').trim() !== ''
@@ -278,7 +279,6 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                                 onChange={(e) => {
                                     const value = e.target.value;
                                     handleIngredientChange(index, '단위', value === '직접 입력' ? '' : value);
-                                    setReadOnlyCheck(value !== '직접 입력')
                                 }}
                             >
                                 {단위목록.map((unit, idx) => (
@@ -290,25 +290,28 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                         </Col>
 
                         <Col xs="auto">
-                            <Form.Check
-                                type='checkbox'
-                                id={`wanna_gram_ingredient_${index}`}
-                                label="그램으로도 표기 "
-                                onChange={() => { setgramCheck(!gramCheck) }}
-                            />
-                        </Col>
+    <Form.Check
+        type='checkbox'
+        id={`wanna_gram_ingredient_${index}`}
+        label="그램으로도 표기"
+        checked={ingredient.그램 !== null} // null이 아니면 체크됨
+        onChange={() =>
+            handleIngredientChange(index, '그램', ingredient.그램 === null ? '' : null)
+        }
+    />
+</Col>
 
-                        <Col xs="auto">
-                            {
-                                gramCheck ? (
-                                    <input
-                                        type='number'
-                                        placeholder='그램 입력'
+{ingredient.그램 !== null && (
+    <Col xs="auto">
+        <Form.Control
+            type="number"
+            placeholder="그램 입력"
+            value={ingredient.그램 || ''}
+            onChange={(e) => handleIngredientChange(index, '그램', e.target.value)}
+        />
+    </Col>
+)}
 
-                                    />
-                                ) : ''
-                            }
-                        </Col>
 
                         <Col xs="auto">
                             {/* 주요 재료 체크박스 */}
