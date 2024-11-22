@@ -1,44 +1,25 @@
 'use client';
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Col, Container, Form, Button, Row } from "react-bootstrap";
 
 export default function Frige() {
     const [ingredients, setIngredients] = useState("");
     const [isMainOnly, setIsMainOnly] = useState(false);
     const [excludeAllergy, setExcludeAllergy] = useState(false);
+    const router = useRouter();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
-        // 검색 조건 생성
-        const searchParams = {
-            ingredients: ingredients.trim().split(" "), // 띄어쓰기로 재료 구분
-            isMainOnly, // 필수 재료만 검색 여부
-            excludeAllergy, // 알레르기 제외 여부
-        };
+        const searchParams = new URLSearchParams({
+            ingredients: ingredients.trim(),
+            isMainOnly: isMainOnly.toString(),
+            // excludeAllergy: excludeAllergy.toString(),
+        });
 
-        try {
-            const response = await fetch("/api/frige_search", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(searchParams),
-            });
-
-            if (!response.ok) {
-                throw new Error("검색 요청에 실패했습니다.");
-            }
-
-            const result = await response.json();
-            console.log("검색 결과:", result);
-
-            // 검색 결과를 처리하거나 화면에 렌더링
-            // 예: setState로 결과를 업데이트하여 리스트 표시
-        } catch (error) {
-            console.error("검색 오류:", error.message);
-        }
+        router.push(`/frige_search?${searchParams.toString()}`);
     };
 
     return (

@@ -1,32 +1,66 @@
 import { connect } from '../../util/database';
+import Post from '../../models/Post';
 
 export default async function handler(req, res) {
-    if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method not allowed" });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: '허용되지 않는 메서드입니다.' });
     }
 
-    const { ingredients, isMainOnly, excludeAllergy } = req.body;
+    // 기본값 설정 및 타입 확인
+    const { ingredients = [], isMainOnly = false, page = 1, limit = 6 } = req.body;
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * limitNumber;
 
-    console.log(req.body);
+    // ingredients가 문자열이면 split, 그렇지 않으면 그대로 배열로 사용
+    const ingredientArray = Array.isArray(ingredients)
+        ? ingredients
+        : typeof ingredients === 'string'
+        ? ingredients.trim().split(' ')
+        : [];
 
-    await connect();
-
-    // 데이터베이스 쿼리 생성
-    const query = {
-        재료들: {
-            $elemMatch: {
-                재료이름: { $in: ingredients }, // 재료 이름이 입력된 재료 중 하나인 게시글
-                ...(isMainOnly && { isMain: true }), // 필수 재료만 검색
-            },
-        },
-        ...(excludeAllergy && { 알레르기: { $exists: false } }), // 알레르기 정보가 없는 게시글
-    };
+    if (ingredientArray.length === 0) {
+        return res.status(400).json({ message: '검색어가 필요합니다.' });
+    }
 
     try {
-        const results = await YourDatabaseModel.find(query); // 데이터베이스 검색
-        res.status(200).json(results);
+        await connect();
+
+        // 검색 조건 설정
+        let query = {};
+        if (isMainOnly) {
+            query = {
+                재료들: {
+                    $elemMatch: {
+                        재료: { $in: ingredientArray }, // 입력된 재료 중 하나
+                        isMain: true, // 필수 재료 조건
+                    },
+                },
+            };
+        } else {
+            query = {
+                재료들: {
+                    $elemMatch: {
+                        재료: { $in: ingredientArray },
+                    },
+                },
+            };
+        }
+
+        // 데이터베이스에서 게시글 검색
+        const totalDocuments = await Post.countDocuments(query);
+        const data = await Post.find(query)
+            .sort({ _id: -1 }) // 최신순 정렬
+            .skip(skip)
+            .limit(limitNumber);
+
+        res.status(200).json({
+            data,
+            totalPages: Math.ceil(totalDocuments / limitNumber),
+            currentPage: pageNumber,
+        });
     } catch (error) {
-        console.error("DB 검색 오류:", error);
-        res.status(500).json({ error: "검색 중 오류가 발생했습니다." });
+        console.error('에러 발생:', error);
+        res.status(500).json({ message: 'frige_search API 오류', error: error.message });
     }
 }
