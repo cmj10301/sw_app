@@ -27,6 +27,7 @@ export default function Home() {
                 setPosts(result.data || []);
                 
                 setTotalPages(result.totalPages);
+                
             } catch (error) {
                 console.error("데이터 가져오기 오류:", error);
             } finally {
@@ -39,6 +40,8 @@ export default function Home() {
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
+
+
 
     return (
         <div>

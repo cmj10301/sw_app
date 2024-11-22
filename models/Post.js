@@ -11,6 +11,7 @@ const postSchema = new mongoose.Schema({
     재료: { type: String, required: true },
     갯수: { type: String, required: true },
     단위: { type: String, },
+    그램: { type: String, },
     isMain : {type : Boolean, default : false},
     _id : false
   }],

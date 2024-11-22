@@ -17,6 +17,7 @@ export default async function RecipeDetail({ params: { id } }) {
 
     const result = await Post.findById(id).populate("작성자", "name").lean() || {};
     const session = await getServerSession(authOptions) || {};
+    console.log(result)
 
     const isUpdated = result.updatedAt > result.createdAt;
     const displayDate = new Date(isUpdated ? result.updatedAt : result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
@@ -50,7 +51,10 @@ export default async function RecipeDetail({ params: { id } }) {
                                 <span style={{ color: 'red', marginLeft: '8px' }}>*</span>
                             )}
                         </Col>
-                        <Col xs={2}>{i.갯수}</Col>
+                        <Col xs={2}>{i.갯수} {i.단위}</Col>
+                        {
+                            i.그램 ? (<Col>{i.그램}g</Col>) :  ""
+                        }
                     </Row>
                 ))}
             </Container>

@@ -12,7 +12,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
     const [src, setSrc] = useState(initialData.썸네일 || '')
     const maxImageSize = 5 * 1024 * 1024; // 5MB
     const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-    const 단위목록 = ['직접 입력', '단', '포기'];
+    const 단위목록 = ['직접 입력', 'g', '단', '포기'];
 
     //ID 미리 생성
     let newId = id;
@@ -260,25 +260,47 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                             />
                         </Col>
 
-                        <Col xs="auto">
+                        <Col xs="auto" className="d-flex align-items-center">
                             {/* 재료 양 */}
-                            <Form.Control
-                                type="text"
-                                id={`ingredient_amount_${index}`}
-                                name={`ingredient_amount_${index}`}
-                                placeholder="재료 양"
-                                defaultValue={ingredient.갯수}
-                                onChange={(e) => handleIngredientChange(index, '갯수', e.target.value)}
-                                required
-                            />
+                            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                <Form.Control
+                                    type="text"
+                                    id={`ingredient_amount_${index}`}
+                                    name={`ingredient_amount_${index}`}
+                                    value={ingredient.갯수 || ''} // 값 초기화 반영
+                                    placeholder="재료 갯수 입력"
+                                    onChange={(e) => handleIngredientChange(index, '갯수', e.target.value)}
+                                    required
+                                    style={{ paddingRight: ingredient.단위 ? '60px' : undefined }} // 오른쪽 여백 확보
+                                />
+                                {ingredient.단위 && (
+                                    <span style={{
+                                        position: 'absolute',
+                                        right: '10px', // 오른쪽 끝 정렬
+                                        color: '#888', // 흐릿한 색상
+                                        pointerEvents: 'none', // 클릭 불가
+                                    }}>
+                                        {ingredient.단위}
+                                    </span>
+                                )}
+                            </div>
                         </Col>
 
                         <Col xs="auto" className="d-flex align-items-center">
                             {/* 드롭다운 */}
                             <Form.Select
+                                value={ingredient.단위 || ''}
                                 onChange={(e) => {
                                     const value = e.target.value;
+
+                                    // 값 초기화
+                                    handleIngredientChange(index, '갯수', ''); // 드롭다운 값 변경 시 갯수 초기화
                                     handleIngredientChange(index, '단위', value === '직접 입력' ? '' : value);
+
+                                    // "그램으로도 표기" 상태 초기화
+                                    if (value === 'g') {
+                                        handleIngredientChange(index, '그램', null);
+                                    }
                                 }}
                             >
                                 {단위목록.map((unit, idx) => (
@@ -289,29 +311,46 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                             </Form.Select>
                         </Col>
 
-                        <Col xs="auto">
-    <Form.Check
-        type='checkbox'
-        id={`wanna_gram_ingredient_${index}`}
-        label="그램으로도 표기"
-        checked={ingredient.그램 !== null} // null이 아니면 체크됨
-        onChange={() =>
-            handleIngredientChange(index, '그램', ingredient.그램 === null ? '' : null)
-        }
-    />
-</Col>
+                        {ingredient.단위 !== 'g' && (
+                            <Col xs="auto">
+                                {/* 그램으로도 표시하기 체크박스 */}
+                                <Form.Check
+                                    type="checkbox"
+                                    id={`wanna_gram_ingredient_${index}`}
+                                    label="그램으로도 표기"
+                                    checked={ingredient.그램 !== null} // null이 아니면 체크됨
+                                    onChange={() =>
+                                        handleIngredientChange(index, '그램', ingredient.그램 === null ? '' : null)
+                                    }
+                                />
+                            </Col>
+                        )}
 
-{ingredient.그램 !== null && (
-    <Col xs="auto">
-        <Form.Control
-            type="number"
-            placeholder="그램 입력"
-            value={ingredient.그램 || ''}
-            onChange={(e) => handleIngredientChange(index, '그램', e.target.value)}
-        />
-    </Col>
-)}
-
+                        {ingredient.그램 !== null && (
+                            <Col xs="auto" className="d-flex align-items-center">
+                                {/* 그램 입력 */}
+                                <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                                    <Form.Control
+                                        type="text"
+                                        id={`ingredient_gram_${index}`}
+                                        name={`ingredient_gram_${index}`}
+                                        value={ingredient.그램 || ''} // 값 초기화 반영
+                                        placeholder="그램 입력"
+                                        onChange={(e) => handleIngredientChange(index, '그램', e.target.value)}
+                                        required
+                                        style={{ paddingRight: '40px' }} // 오른쪽 여백 확보
+                                    />
+                                    <span style={{
+                                        position: 'absolute',
+                                        right: '10px', // 오른쪽 끝 정렬
+                                        color: '#888', // 흐릿한 색상
+                                        pointerEvents: 'none', // 클릭 불가
+                                    }}>
+                                        g
+                                    </span>
+                                </div>
+                            </Col>
+                        )}
 
                         <Col xs="auto">
                             {/* 주요 재료 체크박스 */}
@@ -332,6 +371,7 @@ export default function PostForm({ initialData = '', id = null, author = null, p
                         </Col>
                     </Form.Group>
                 ))}
+
 
                 <Button variant="secondary" className='mb-3' onClick={handleAddIngredient}>재료 추가</Button>
                 <TextEditor className='my-3' EditorContent={EditorContent} onDataChange={setEditorContent} />
