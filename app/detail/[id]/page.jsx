@@ -8,6 +8,7 @@ import Modals from '../../../component/modal';
 import { Button, Col, Container, Image, Row, Stack } from 'react-bootstrap';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../pages/api/auth/[...nextauth]';
+import LikeBtn from '../../../component/likeBtn';
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -17,7 +18,6 @@ export default async function RecipeDetail({ params: { id } }) {
 
     const result = await Post.findById(id).populate("작성자", "name").lean() || {};
     const session = await getServerSession(authOptions) || {};
-    console.log(result)
 
     const isUpdated = result.updatedAt > result.createdAt;
     const displayDate = new Date(isUpdated ? result.updatedAt : result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
@@ -62,9 +62,12 @@ export default async function RecipeDetail({ params: { id } }) {
             <h2>조리 방법</h2>
             <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
             <hr />
-            <form action={handleLike} className="mb-3">
+            {/* <form action={handleLike} className="mb-3">
                 <Button type="submit">👍 {result?.like || 0}</Button>
-            </form>
+            </form> */}
+            <LikeBtn initialLike={result.좋아요} postId={id} userId={session?.user?._id || null} />
+           
+            
             {(result?.비밀번호 || result?.작성자?._id?.toString() === session?.user?._id) && (
                 <Stack direction="horizontal" gap={3}>
                     <Modals

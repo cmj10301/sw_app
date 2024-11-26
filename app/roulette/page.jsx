@@ -75,7 +75,7 @@ const SlotMachine = () => {
   };
 
   // 충분히 긴 items 배열 생성
-  const items = Array(50).fill(nitems).flat();
+  const items = Array(10).fill(nitems).flat();
 
   return (
     <Container>

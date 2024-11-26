@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
     if (req.method === "POST") {
-        const { _id, 작성자, 비밀번호, 제목, 썸네일, 재료들, 내용, like } = req.body;
+        const { _id, 작성자, 비밀번호, 제목, 썸네일, 재료들, 내용, 좋아요 } = req.body;
 
         await connect();
 
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
                 썸네일,
                 재료들,
                 내용,
-                like
+                좋아요
             });
             await newPost.save();
 

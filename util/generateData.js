@@ -18,7 +18,7 @@ async function insertDummyData() {
                 { 재료: faker.commerce.productName(), 갯수: `${faker.number.int({ min: 1, max: 10 })}개` },
                 { 재료: faker.commerce.productName(), 갯수: `${faker.number.int({ min: 1, max: 10 })}개` },
             ],
-            like: faker.number.int(100),
+            좋아요: faker.number.int(100),
         }));
 
         await collection.insertMany(data);

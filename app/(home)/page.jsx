@@ -65,7 +65,7 @@ export default function Home() {
                                         </div>
                                         <Card.Body>
                                             <Card.Title>{a.제목}</Card.Title>
-                                            <Card.Text>👍 : {a.like || 0}</Card.Text>
+                                            <Card.Text>👍 : {a.좋아요 || 0}</Card.Text>
                                             <Card.Text>
                                                 작성자: {a.작성자 ? (
                                                     <>

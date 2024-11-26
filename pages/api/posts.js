@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
         const totalPages = Math.ceil(totalDocuments / limitNumber);
 
-        const data = await Post.find({}, { _id: 1, 제목: 1, like: 1, 썸네일: 1, 작성자: 1 })
+        const data = await Post.find({}, { _id: 1, 제목: 1, 좋아요: 1, 썸네일: 1, 작성자: 1 })
             .populate("작성자", "name email image") // User 모델의 필드를 참조
             .sort({ _id: -1 })
             .skip(skip)
