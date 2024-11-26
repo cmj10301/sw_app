@@ -13,30 +13,32 @@ const SlotMachine = () => {
   const itemHeight = 160 * 2.5; // 각 아이템의 높이를 2.5배로 확대
   const totalSpins = 5;
 
+  const fetchImages = async (category) => {
+    try {
+      const response = await fetch(`/api/get-images?category=${category}`);
+      const images = await response.json();
+
+      // API에서 받은 데이터 형식에 맞게 처리
+      const formattedImages = images.map((item) => ({
+        name: item.name, // API 응답에서 이름 가져오기
+        image: `/${item.path}`, // 경로를 포함한 이미지 URL 생성
+      }));
+
+      setNitems([...formattedImages]); // 기본 이미지 배열
+    } catch (error) {
+      console.error("이미지 가져오기 실패:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchImages = async () => {
-      try {
-        const response = await fetch("/api/get-images");
-        const images = await response.json();
-
-        // API에서 받은 데이터 형식에 맞게 처리
-        const formattedImages = images.map((item) => ({
-          name: item.name, // API 응답에서 이름 가져오기
-          image: `/${item.path}`, // 경로를 포함한 이미지 URL 생성
-        }));
-
-        setNitems([...formattedImages]); // 기본 이미지 배열
-      } catch (error) {
-        console.error("이미지 가져오기 실패:", error);
-      }
-    };
-
-    fetchImages();
-  }, []);
+    fetchImages(selected); // 드롭다운 값에 따라 이미지 가져오기
+  }, [selected]);
 
   const handleSelect = (eventKey) => {
-    setSelected(eventKey);
-  }
+    if (!isRunning) {
+      setSelected(eventKey);
+    }
+  };
 
   const startSlot = async () => {
     if (isRunning || nitems.length === 0) return;
@@ -78,7 +80,7 @@ const SlotMachine = () => {
   return (
     <Container>
       <Dropdown onSelect={handleSelect} className="mt-3">
-        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={isRunning}>
           {selected}
         </Dropdown.Toggle>
 
@@ -87,7 +89,7 @@ const SlotMachine = () => {
           <Dropdown.Item eventKey="한식">한식</Dropdown.Item>
           <Dropdown.Item eventKey="중식">중식</Dropdown.Item>
           <Dropdown.Item eventKey="일식">일식</Dropdown.Item>
-          <Dropdown.Item eventKey="일식">양식</Dropdown.Item>
+          <Dropdown.Item eventKey="양식">양식</Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
       <SlotMachineWrapper>

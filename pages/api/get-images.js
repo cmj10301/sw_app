@@ -7,34 +7,52 @@ export default function handler(req, res) {
 
   // 가져올 서브폴더 목록
   const subFolders = ["한식", "중식", "일식", "양식"];
+  const { category } = req.query;
 
   try {
     let allImageFiles = [];
 
-    // 각 폴더의 이미지를 가져옴
-    subFolders.forEach((folder) => {
-      const folderPath = path.join(directoryPath, folder);
+    if (category === "전체") {
+      // 전체 이미지를 가져옴
+      subFolders.forEach((folder) => {
+        const folderPath = path.join(directoryPath, folder);
 
-      // 폴더가 존재하면
+        if (fs.existsSync(folderPath)) {
+          const files = fs.readdirSync(folderPath);
+
+          const imageFiles = files
+            .filter(
+              (file) =>
+                ["jpg", "jpeg", "png", "gif"].includes(file.split(".").pop().toLowerCase()) &&
+                file.toLowerCase() !== "default.jpg"
+            )
+            .map((file) => ({
+              path: `${folder}/${file}`, // 경로 포함
+              name: file.split(".")[0], // 확장자 제외한 파일 이름
+            }));
+
+          allImageFiles = allImageFiles.concat(imageFiles);
+        }
+      });
+    } else {
+      // 특정 카테고리(폴더)의 이미지를 가져옴
+      const folderPath = path.join(directoryPath, category);
+
       if (fs.existsSync(folderPath)) {
         const files = fs.readdirSync(folderPath);
 
-        // 이미지 파일 필터링 및 default.jpg 제외
-        const imageFiles = files
+        allImageFiles = files
           .filter(
             (file) =>
               ["jpg", "jpeg", "png", "gif"].includes(file.split(".").pop().toLowerCase()) &&
               file.toLowerCase() !== "default.jpg"
           )
           .map((file) => ({
-            path: `${folder}/${file}`, // 경로 포함
+            path: `${category}/${file}`, // 경로 포함
             name: file.split(".")[0], // 확장자 제외한 파일 이름
           }));
-
-        // 결과 배열에 추가
-        allImageFiles = allImageFiles.concat(imageFiles);
       }
-    });
+    }
 
     res.status(200).json(allImageFiles);
   } catch (error) {
