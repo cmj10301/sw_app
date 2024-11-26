@@ -1,11 +1,17 @@
 'use client';
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Dropdown } from "react-bootstrap";
 import styled from "styled-components";
 
 const SlotMachine = () => {
   const [nitems, setNitems] = useState([]);
   const [result, setResult] = useState(null);
+  const [selected, setSelected] = useState("전체");
+  const controls = useAnimation();
+  const [isRunning, setIsRunning] = useState(false);
+  const itemHeight = 160 * 2.5; // 각 아이템의 높이를 2.5배로 확대
+  const totalSpins = 5;
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -28,10 +34,9 @@ const SlotMachine = () => {
     fetchImages();
   }, []);
 
-  const controls = useAnimation();
-  const [isRunning, setIsRunning] = useState(false);
-  const itemHeight = 160 * 2.5; // 각 아이템의 높이를 2.5배로 확대
-  const totalSpins = 5;
+  const handleSelect = (eventKey) => {
+    setSelected(eventKey);
+  }
 
   const startSlot = async () => {
     if (isRunning || nitems.length === 0) return;
@@ -72,6 +77,19 @@ const SlotMachine = () => {
 
   return (
     <Container>
+      <Dropdown onSelect={handleSelect} className="mt-3">
+        <Dropdown.Toggle variant="primary" id="dropdown-basic">
+          {selected}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          <Dropdown.Item eventKey="전체">전체</Dropdown.Item>
+          <Dropdown.Item eventKey="한식">한식</Dropdown.Item>
+          <Dropdown.Item eventKey="중식">중식</Dropdown.Item>
+          <Dropdown.Item eventKey="일식">일식</Dropdown.Item>
+          <Dropdown.Item eventKey="일식">양식</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
       <SlotMachineWrapper>
         <SlotContainer>
           <motion.div
