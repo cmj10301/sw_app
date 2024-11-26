@@ -1,61 +1,65 @@
 'use client';
 import { motion, useAnimation } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const SlotMachine = () => {
-  const nitems = [
-    { name: "사과", image: "/apple.jpeg" },
-    { name: "포도", image: "/grape.jpeg" },
-    { name: "딸기", image: "/strawberry.jpeg" },
-    { name: "배", image: "/pear.png" },
-    { name: "복숭아", image: "/peach.jpeg" },
-    { name: "수박", image: "/watermelon.jpeg" },
-    { name: "멜론", image: "/melon.jpeg" },
-    { name: "망고", image: "/mango.png" },
-  ];
+  const [nitems, setNitems] = useState([]);
+  const [result, setResult] = useState(null);
 
-  // 슬롯 머신에 표시될 아이템을 여러 번 반복하여 애니메이션 시 자연스러운 스크롤 효과를 줍니다.
-  const items = [...nitems, ...nitems, ...nitems, ...nitems, ...nitems, ...nitems, ...nitems, ...nitems, ...nitems]; // 충분히 반복하여 부드러운 스크롤링 확보
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch("/api/get-images");
+        const images = await response.json();
+
+        // API에서 받은 데이터 형식에 맞게 처리
+        const formattedImages = images.map((item) => ({
+          name: item.name, // API 응답에서 이름 가져오기
+          image: `/${item.path}`, // 경로를 포함한 이미지 URL 생성
+        }));
+
+        setNitems([...formattedImages]); // 기본 이미지 배열
+      } catch (error) {
+        console.error("이미지 가져오기 실패:", error);
+      }
+    };
+
+    fetchImages();
+  }, []);
 
   const controls = useAnimation();
   const [isRunning, setIsRunning] = useState(false);
-  const [animationY, setAnimationY] = useState(0);
-
-  const itemHeight = 160; // 각 아이템의 높이 (px)
-  const totalSpins = 5; // 슬롯이 회전할 전체 회전 수
+  const itemHeight = 160 * 2.5; // 각 아이템의 높이를 2.5배로 확대
+  const totalSpins = 5;
 
   const startSlot = async () => {
-    if (isRunning) return;
+    if (isRunning || nitems.length === 0) return;
     setIsRunning(true);
 
-    // 랜덤하게 최종 목표 아이템을 선택
     const randomIndex = Math.floor(Math.random() * nitems.length);
-    // 총 회전할 아이템 수 계산: 전체 아이템 수 * totalSpins + 랜덤 인덱스
     const finalPosition = (nitems.length * totalSpins + randomIndex) * itemHeight;
+    const resetPosition = finalPosition % (nitems.length * itemHeight);
 
     try {
-      // **1단계: 빠른 회전**
       await controls.start({
         y: -finalPosition + (itemHeight * nitems.length),
         transition: {
-          duration: 2, // 빠른 회전 지속 시간 (초)
+          duration: 1.5,
           ease: "linear",
         },
       });
 
-      // **2단계: 천천히 멈추기**
       await controls.start({
         y: -finalPosition,
         transition: {
-          duration: 1.5, // 천천히 멈추는 지속 시간 (초)
+          duration: 3.5,
           ease: "easeOut",
         },
       });
 
-      // 애니메이션이 완료되면 슬롯 위치 리셋하여 무한 스크롤 효과 유지
-      const resetPosition = finalPosition % (nitems.length * itemHeight);
       controls.set({ y: -resetPosition });
+      setResult(nitems[randomIndex].name); // 뽑힌 요소 저장
     } catch (error) {
       console.error("애니메이션 에러:", error);
     } finally {
@@ -63,26 +67,38 @@ const SlotMachine = () => {
     }
   };
 
+  // 충분히 긴 items 배열 생성
+  const items = Array(50).fill(nitems).flat();
+
   return (
     <Container>
-      <SlotContainer>
-        <motion.div
-          animate={controls}
-          initial={{ y: 0 }}
-          style={{ display: "flex", flexDirection: "column" }}
-        >
-          {items.map((item, index) => (
-            <SlotItemBox key={index}>
-              <img
-                src={item.image}
-                alt={item.name}
-                style={{ width: "120px", height: "120px", marginBottom: "10px" }}
-              />
-              <SlotItemText>{item.name}</SlotItemText>
-            </SlotItemBox>
-          ))}
-        </motion.div>
-      </SlotContainer>
+      <SlotMachineWrapper>
+        <SlotContainer>
+          <motion.div
+            animate={controls}
+            initial={{ y: 0 }}
+            style={{ display: "flex", flexDirection: "column" }}
+          >
+            {items.map((item, index) => (
+              <SlotItemBox key={index}>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  style={{
+                    width: "300px", // 2.5배 크기
+                    height: "300px",
+                    marginBottom: "25px",
+                  }}
+                />
+                <SlotItemText>{item.name}</SlotItemText>
+              </SlotItemBox>
+            ))}
+          </motion.div>
+        </SlotContainer>
+      </SlotMachineWrapper>
+
+      {result && <ResultText>🎉 뽑힌 요소: <span>{result}</span> 🎉</ResultText>}
+
       <StartButton onClick={startSlot} disabled={isRunning}>
         {isRunning ? "스피닝..." : "시작"}
       </StartButton>
@@ -92,50 +108,56 @@ const SlotMachine = () => {
 
 // 스타일 정의
 const Container = styled.div`
-  width: 420px;
-  height: 820px;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
 
+const SlotMachineWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const SlotContainer = styled.div`
-  width: 200px;
-  height: 160px;
+  width: 500px; /* 2.5배로 확대 */
+  height: 400px; /* 2.5배로 확대 */
   overflow: hidden;
-  border: 2px solid #333;
-  border-radius: 10px;
+  border: 5px solid #333; /* 2.5배로 확대 */
+  border-radius: 20px; /* 2.5배로 확대 */
   background-color: #000;
   position: relative;
 `;
 
 const SlotItemBox = styled.div`
   color: white;
-  font-size: 20px;
+  font-size: 40px; /* 2.5배 크기 */
   font-weight: bold;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 160px;
+  height: 400px; /* 2.5배 크기 */
 `;
 
 const SlotItemText = styled.div`
-  font-size: 18px;
-  margin-top: 5px;
+  font-size: 45px; /* 2.5배 크기 */
+  margin-top: 10px;
 `;
 
 const StartButton = styled.button`
   background-color: #4caf50;
   color: white;
-  font-size: 20px;
+  font-size: 30px; /* 2.5배 크기 */
   font-weight: bold;
-  width: 200px;
-  height: 50px;
-  margin-top: 20px;
+  width: 300px; /* 2.5배 크기 */
+  height: 75px; /* 2.5배 크기 */
+  margin-top: 30px;
   border: none;
-  border-radius: 10px;
+  border-radius: 15px;
   cursor: pointer;
   transition: background-color 0.3s, opacity 0.3s;
 
@@ -148,6 +170,14 @@ const StartButton = styled.button`
     background-color: #888;
     cursor: not-allowed;
   }
+`;
+
+const ResultText = styled.div`
+  font-size: 50px;
+  color: black;
+  font-weight: bold;
+  margin-top: 20px;
+  text-align: center;
 `;
 
 export default SlotMachine;
