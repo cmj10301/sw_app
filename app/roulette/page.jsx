@@ -79,50 +79,61 @@ const SlotMachine = () => {
 
   return (
     <Container>
-      <Dropdown onSelect={handleSelect} className="mt-3">
-        <Dropdown.Toggle variant="primary" id="dropdown-basic" disabled={isRunning}>
-          {selected}
-        </Dropdown.Toggle>
+      {/* 드롭다운 영역 */}
+      <div className="d-flex align-items-center mt-3">
+        <span style={{ marginRight: "10px", fontWeight: "bold", fontSize: "30px"}}>음식 분류 :</span>
+        <Dropdown onSelect={handleSelect} >
+          <Dropdown.Toggle  style={{ fontSize: "20px"}} variant="primary" id="dropdown-basic" disabled={isRunning}>
+            {selected}
+          </Dropdown.Toggle>
 
-        <Dropdown.Menu>
-          <Dropdown.Item eventKey="전체">전체</Dropdown.Item>
-          <Dropdown.Item eventKey="한식">한식</Dropdown.Item>
-          <Dropdown.Item eventKey="중식">중식</Dropdown.Item>
-          <Dropdown.Item eventKey="일식">일식</Dropdown.Item>
-          <Dropdown.Item eventKey="양식">양식</Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
-      <SlotMachineWrapper>
-        <SlotContainer>
-          <motion.div
-            animate={controls}
-            initial={{ y: 0 }}
-            style={{ display: "flex", flexDirection: "column" }}
-          >
-            {items.map((item, index) => (
-              <SlotItemBox key={index}>
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  style={{
-                    width: "300px", // 2.5배 크기
-                    height: "300px",
-                    marginBottom: "25px",
-                  }}
-                />
-                <SlotItemText>{item.name}</SlotItemText>
-              </SlotItemBox>
-            ))}
-          </motion.div>
-        </SlotContainer>
-      </SlotMachineWrapper>
+          <Dropdown.Menu>
+            <Dropdown.Item eventKey="전체">전체</Dropdown.Item>
+            <Dropdown.Item eventKey="한식">한식</Dropdown.Item>
+            <Dropdown.Item eventKey="중식">중식</Dropdown.Item>
+            <Dropdown.Item eventKey="일식">일식</Dropdown.Item>
+            <Dropdown.Item eventKey="양식">양식</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
 
-      {result && <ResultText>🎉 뽑힌 요소: <span>{result}</span> 🎉</ResultText>}
+      {/* 슬롯 머신과 간격 */}
+      <div style={{ marginTop: "30px" }}>
+        <SlotMachineWrapper>
+          <SlotContainer>
+            <motion.div
+              animate={controls}
+              initial={{ y: 0 }}
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              {items.map((item, index) => (
+                <SlotItemBox key={index}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    style={{
+                      width: "300px", // 2.5배 크기
+                      height: "300px",
+                      marginBottom: "25px",
+                    }}
+                  />
+                  <SlotItemText>{item.name}</SlotItemText>
+                </SlotItemBox>
+              ))}
+            </motion.div>
+          </SlotContainer>
+        </SlotMachineWrapper>
+      </div>
 
+      {/* 결과 텍스트 */}
+      {result && <ResultText>오늘의 메뉴 : <span>{result}</span> 🧑‍🍳</ResultText>}
+
+      {/* 시작 버튼 */}
       <StartButton onClick={startSlot} disabled={isRunning}>
         {isRunning ? "스피닝..." : "시작"}
       </StartButton>
     </Container>
+
   );
 };
 
@@ -148,12 +159,12 @@ const SlotContainer = styled.div`
   overflow: hidden;
   border: 5px solid #333; /* 2.5배로 확대 */
   border-radius: 20px; /* 2.5배로 확대 */
-  background-color: #000;
+  background-color: white;
   position: relative;
 `;
 
 const SlotItemBox = styled.div`
-  color: white;
+  color: black;
   font-size: 40px; /* 2.5배 크기 */
   font-weight: bold;
   display: flex;

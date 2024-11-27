@@ -50,7 +50,7 @@ export default function LikeBtn({ initialLike, postId, userId }) {
     
     return (
         <Button onClick={handleLikeClick}>
-            {isLiked ? '좋아요 취소' : '좋아요'} {like ? like : 0}
+            {isLiked ? '👍' : '👍'} {like ? like : 0}
         </Button>
     );
 }

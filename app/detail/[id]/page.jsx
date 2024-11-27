@@ -21,13 +21,6 @@ export default async function RecipeDetail({ params: { id } }) {
 
     const isUpdated = result.updatedAt > result.createdAt;
     const displayDate = new Date(isUpdated ? result.updatedAt : result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
-    const dateLabel = isUpdated ? "수정된 날짜" : "작성 날짜";
-
-    async function handleLike() {
-        'use server';
-        const updatedPost = await like(id, result?.like || 0);
-        revalidatePath(`/recipe/${id}`);
-    }
 
     const sanitizedContent = DOMPurify.sanitize(result?.내용 || "조리 방법이 설정되지 않았습니다.");
     const stringId = result._id.toString();
@@ -53,7 +46,7 @@ export default async function RecipeDetail({ params: { id } }) {
                         </Col>
                         <Col xs={2}>{i.갯수} {i.단위}</Col>
                         {
-                            i.그램 ? (<Col>{i.그램}g</Col>) :  ""
+                            i.그램 ? (<Col>{i.그램}g</Col>) : ""
                         }
                     </Row>
                 ))}
@@ -62,12 +55,9 @@ export default async function RecipeDetail({ params: { id } }) {
             <h2>조리 방법</h2>
             <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
             <hr />
-            {/* <form action={handleLike} className="mb-3">
-                <Button type="submit">👍 {result?.like || 0}</Button>
-            </form> */}
-            <LikeBtn initialLike={result.좋아요} postId={id} userId={session?.user?._id || null} />
-           
             
+            <LikeBtn initialLike={result.좋아요} postId={id} userId={session?.user?._id || null} />
+
             {(result?.비밀번호 || result?.작성자?._id?.toString() === session?.user?._id) && (
                 <Stack direction="horizontal" gap={3}>
                     <Modals
@@ -83,8 +73,20 @@ export default async function RecipeDetail({ params: { id } }) {
                 </Stack>
             )}
 
+            <hr></hr>
+
             <p>작성자 : {result?.작성자?.name || "익명"}</p>
-            <span>{dateLabel}: {displayDate}</span>
+            {
+                isUpdated ? (
+                    <div>
+                        <span>작성 날짜 : {new Date(result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
+                        <br></br>
+                        <span>수정된 날짜 : {new Date(result.updatedAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
+                    </div>
+                ) : (
+                    <span>작성 날짜 : {new Date(result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
+                )
+            }
         </div>
     );
 }
