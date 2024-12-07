@@ -2,14 +2,16 @@ const mongoose = require('mongoose');
 
 const LikeSchema = new mongoose.Schema({
   userId: {
-    type: mongoose.Schema.Types.ObjectId, // User를 참조
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
   },
   postId: {
-    type: mongoose.Schema.Types.ObjectId, // Post를 참조
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Post',
     required: true,
+  },
+  ipAddress: {
+    type: String, // 비회원의 IP 주소
   },
 }, { timestamps: true });
 

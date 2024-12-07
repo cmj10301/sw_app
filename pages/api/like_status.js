@@ -1,5 +1,5 @@
 import { connect } from '../../util/database.js';
-import Like from '../../models/Like';
+import Like from '../../models/Likes';
 import Post from '../../models/Post'; // 게시물 정보 가져오기
 
 export default async function handler(req, res) {

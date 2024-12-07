@@ -1,11 +1,9 @@
 import { JSDOM } from 'jsdom';
 import createDOMPurify from 'dompurify';
-import like from "../../../pages/api/like";
 import { connect } from "../../../util/database.js";
 import Post from '../../../models/Post';
-import { revalidatePath } from "next/cache";
 import Modals from '../../../component/modal';
-import { Button, Col, Container, Image, Row, Stack } from 'react-bootstrap';
+import { Col, Container, Image, Row, Stack } from 'react-bootstrap';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../pages/api/auth/[...nextauth]';
 import LikeBtn from '../../../component/likeBtn';
