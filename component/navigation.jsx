@@ -25,10 +25,12 @@ export default async function Navigation() {
                     </li>
                 </ul>
 
-                {/* 검색 및 로그인 버튼 */}
                 <div className="d-flex align-items-center mx-3" style={{ whiteSpace: "nowrap" }}>
                     <Search/>
+                </div>
+                <div>
                     <LoginBtn userInfo={session}/>
+                    <Link href="/myPage"><img src='public/myPageIcon.png' alt="마이페이지"></img></Link>
                 </div>
             </div>
         </nav>
