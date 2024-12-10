@@ -1,10 +1,10 @@
-'use client';
+"use client"; // 클라이언트 컴포넌트 지정
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Col, Container, Form, Button, Row } from "react-bootstrap";
 
-export default function Frige() {
+export default function Frige({ userId }) {
     const [ingredients, setIngredients] = useState("");
     const [isMainOnly, setIsMainOnly] = useState(false);
     const [excludeAllergy, setExcludeAllergy] = useState(false);
@@ -16,8 +16,13 @@ export default function Frige() {
         const searchParams = new URLSearchParams({
             ingredients: ingredients.trim(),
             isMainOnly: isMainOnly.toString(),
-            // excludeAllergy: excludeAllergy.toString(),
+            excludeAllergy: excludeAllergy.toString(),
         });
+
+        // 사용자 ID 추가
+        if (userId) {
+            searchParams.append("userId", userId);
+        }
 
         router.push(`/frige_search?${searchParams.toString()}`);
     };
@@ -33,7 +38,7 @@ export default function Frige() {
                             <Form.Group controlId="ingredientInput">
                                 <Form.Control
                                     type="text"
-                                    placeholder="재료를 입력하세요. 띄어쓰기로 재료를 구분합니다."
+                                    placeholder="재료를 입력하세요. 쉼표로 재료를 구분합니다."
                                     value={ingredients}
                                     onChange={(e) => setIngredients(e.target.value)}
                                 />

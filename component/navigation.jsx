@@ -19,7 +19,7 @@ export default async function Navigation() {
                         <Link href="/" className="nav-link">Home</Link>
                     </li>
                     <li className="nav-item mx-2">
-                        <Link href="/frige" className="nav-link">Frige</Link>
+                        <Link href="/frige_page" className="nav-link">Frige</Link>
                     </li>
                     <li className="nav-item mx-2">
                         <Link href="/roulette" className="nav-link">Roulette</Link>
