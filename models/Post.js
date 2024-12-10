@@ -16,7 +16,8 @@ const postSchema = new mongoose.Schema({
     _id : false
   }],
   내용: { type: String, required: true },
-  좋아요: { type: Number, default: 0, required: true }
+  좋아요: { type: Number, default: 0, required: true },
+  조회수: { type: Number, default: 0 }
 }, {
   collection: 'post',
   timestamps: true

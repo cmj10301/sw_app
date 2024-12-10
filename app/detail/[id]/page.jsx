@@ -7,6 +7,7 @@ import { Col, Container, Image, Row, Stack } from 'react-bootstrap';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../pages/api/auth/[...nextauth]';
 import LikeBtn from '../../../component/likeBtn';
+import ViewIncrementer from "../../../component/ViewIncrementer.jsx";
 
 const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
@@ -85,6 +86,8 @@ export default async function RecipeDetail({ params: { id } }) {
                     <span>작성 날짜 : {new Date(result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
                 )
             }
+            조회수 : {result.조회수}
+            <ViewIncrementer postId={id}/>
         </div>
     );
 }
