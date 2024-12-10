@@ -86,7 +86,7 @@ export default async function RecipeDetail({ params: { id } }) {
                     <span>작성 날짜 : {new Date(result.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</span>
                 )
             }
-            조회수 : {result.조회수}
+            조회수 : {result.조회수 || 0}
             <ViewIncrementer postId={id}/>
         </div>
     );

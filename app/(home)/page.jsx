@@ -27,7 +27,6 @@ export default function Home() {
                 setPosts(result.data || []);
                 
                 setTotalPages(result.totalPages);
-                
             } catch (error) {
                 console.error("데이터 가져오기 오류:", error);
             } finally {
@@ -40,8 +39,6 @@ export default function Home() {
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
-
-
 
     return (
         <div>
@@ -66,6 +63,7 @@ export default function Home() {
                                         <Card.Body>
                                             <Card.Title>{a.제목}</Card.Title>
                                             <Card.Text>👍 : {a.좋아요 || 0}</Card.Text>
+                                            <Card.Text>조회수 : {a.조회수 || 0}</Card.Text>
                                             <Card.Text>
                                                 작성자: {a.작성자 ? (
                                                     <>
