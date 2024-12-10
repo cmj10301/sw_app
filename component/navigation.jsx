@@ -4,6 +4,7 @@ import LoginBtn from "../component/LoginBtn";
 import { getServerSession } from 'next-auth';
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import Search from '../component/search';
+import Image from 'next/image';
 
 export default async function Navigation() {
     const session = await getServerSession(authOptions);
@@ -30,7 +31,9 @@ export default async function Navigation() {
                 </div>
                 <div>
                     <LoginBtn userInfo={session}/>
-                    <Link href="/myPage"><img src='public/myPageIcon.png' alt="마이페이지"></img></Link>
+                    <Link href="/myPage" className='background : white'>
+                        <Image src={'/myPageIcon.png'} width={40} height={40}/>
+                    </Link>
                 </div>
             </div>
         </nav>
